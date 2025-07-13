@@ -1,41 +1,119 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Button,
-  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
+  useColorScheme,
+  View,
 } from "react-native";
+import DropDownPicker from "react-native-dropdown-picker";
 
 export default function Configuracion() {
   const router = useRouter();
+  const colorScheme = useColorScheme();
+  const darkMode = colorScheme === "dark";
+  const styles = getStyles(darkMode);
 
   const [username, setUsername] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
+  // Dropdown states
+  const [openObjetivo, setOpenObjetivo] = useState(false);
   const [objetivo, setObjetivo] = useState("ganar masa muscular");
-  const [edad, setEdad] = useState("");
+  const objetivos = [
+    { label: "Ganar masa muscular", value: "ganar masa muscular" },
+    { label: "Tonificar", value: "tonificar" },
+    { label: "Bajar de peso", value: "bajar de peso" },
+  ];
+
+  const [openSexo, setOpenSexo] = useState(false);
   const [sexo, setSexo] = useState("masculino");
+  const sexos = [
+    { label: "Masculino", value: "masculino" },
+    { label: "Femenino", value: "femenino" },
+  ];
+
+  const [openExperiencia, setOpenExperiencia] = useState(false);
+  const [experiencia, setExperiencia] = useState("principiante");
+  const experiencias = [
+    { label: "Principiante", value: "principiante" },
+    { label: "Intermedio", value: "intermedio" },
+    { label: "Avanzado", value: "avanzado" },
+  ];
+
+  // Otros campos
+  const [edad, setEdad] = useState("");
   const [altura, setAltura] = useState("");
   const [peso, setPeso] = useState("");
-  const [experiencia, setExperiencia] = useState("principiante");
 
+  // Control dropdowns para que solo uno esté abierto
+  const onOpenObjetivo = () => {
+    setOpenSexo(false);
+    setOpenExperiencia(false);
+  };
+  const onOpenSexo = () => {
+    setOpenObjetivo(false);
+    setOpenExperiencia(false);
+  };
+  const onOpenExperiencia = () => {
+    setOpenObjetivo(false);
+    setOpenSexo(false);
+  };
+
+  // Cargar username y configuración guardada
   useEffect(() => {
     AsyncStorage.getItem("user")
       .then((json) => {
-        if (json) {
-          const user = JSON.parse(json);
-          setUsername(user.name || user.email || null);
-        } else {
+        if (!json) {
           Alert.alert(
             "Error",
             "No se encontró información del usuario. Por favor inicia sesión."
           );
           router.replace("/login");
+          return;
         }
+        const user = JSON.parse(json);
+        const name = user.name || user.email || null;
+        if (!name) {
+          Alert.alert(
+            "Error",
+            "No se pudo obtener el nombre de usuario. Por favor inicia sesión de nuevo."
+          );
+          router.replace("/login");
+          return;
+        }
+        setUsername(name);
+
+        // Luego obtener configuración
+        fetch(
+          `http://192.168.1.128:3000/api/configuracion/${encodeURIComponent(
+            name
+          )}`
+        )
+          .then(async (res) => {
+            if (res.ok) {
+              const data = await res.json();
+              setObjetivo(data.objetivo || "ganar masa muscular");
+              setEdad(data.edad || "");
+              setSexo(data.sexo || "masculino");
+              setAltura(data.altura || "");
+              setPeso(data.peso || "");
+              setExperiencia(data.experiencia || "principiante");
+            }
+            // Si no existe config (404), mantenemos valores por defecto
+          })
+          .catch((err) => {
+            console.error("Error cargando configuración:", err);
+            Alert.alert("Error", "No se pudo cargar la configuración.");
+          })
+          .finally(() => setLoading(false));
       })
       .catch((error) => {
         console.error("Error leyendo usuario de AsyncStorage:", error);
@@ -97,21 +175,42 @@ export default function Configuracion() {
     }
   };
 
+  if (loading) {
+    return (
+      <View
+        style={[
+          styles.container,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
+        <ActivityIndicator size="large" color={darkMode ? "#fff" : "#000"} />
+      </View>
+    );
+  }
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      style={styles.container}
+    >
       <Text style={styles.title}>Configuración Inicial</Text>
 
       <Text style={styles.label}>Objetivo físico</Text>
-      <Picker
-        selectedValue={objetivo}
-        onValueChange={setObjetivo}
-        style={{ color: "#fff" }}
-        dropdownIconColor="#fff"
-      >
-        <Picker.Item label="Ganar masa muscular" value="ganar masa muscular" />
-        <Picker.Item label="Tonificar" value="tonificar" />
-        <Picker.Item label="Bajar de peso" value="bajar de peso" />
-      </Picker>
+      <DropDownPicker
+        open={openObjetivo}
+        value={objetivo}
+        items={objetivos}
+        setOpen={setOpenObjetivo}
+        setValue={setObjetivo}
+        setItems={() => {}}
+        onOpen={onOpenObjetivo}
+        style={styles.dropdown}
+        dropDownContainerStyle={styles.dropDownContainer}
+        placeholder="Selecciona un objetivo"
+        textStyle={styles.dropdownText}
+        listMode="SCROLLVIEW"
+        dropDownDirection="AUTO"
+      />
 
       <Text style={styles.label}>Edad</Text>
       <TextInput
@@ -119,18 +218,26 @@ export default function Configuracion() {
         keyboardType="numeric"
         value={edad}
         onChangeText={setEdad}
+        placeholder="Ej: 25"
+        placeholderTextColor={darkMode ? "#888" : "#aaa"}
       />
 
       <Text style={styles.label}>Sexo</Text>
-      <Picker
-        selectedValue={sexo}
-        onValueChange={setSexo}
-        style={{ color: "#fff" }}
-        dropdownIconColor="#fff"
-      >
-        <Picker.Item label="Masculino" value="masculino" />
-        <Picker.Item label="Femenino" value="femenino" />
-      </Picker>
+      <DropDownPicker
+        open={openSexo}
+        value={sexo}
+        items={sexos}
+        setOpen={setOpenSexo}
+        setValue={setSexo}
+        setItems={() => {}}
+        onOpen={onOpenSexo}
+        style={styles.dropdown}
+        dropDownContainerStyle={styles.dropDownContainer}
+        placeholder="Selecciona sexo"
+        textStyle={styles.dropdownText}
+        listMode="SCROLLVIEW"
+        dropDownDirection="AUTO"
+      />
 
       <Text style={styles.label}>Altura (cm)</Text>
       <TextInput
@@ -138,6 +245,8 @@ export default function Configuracion() {
         keyboardType="numeric"
         value={altura}
         onChangeText={setAltura}
+        placeholder="Ej: 170"
+        placeholderTextColor={darkMode ? "#888" : "#aaa"}
       />
 
       <Text style={styles.label}>Peso (kg)</Text>
@@ -146,49 +255,77 @@ export default function Configuracion() {
         keyboardType="numeric"
         value={peso}
         onChangeText={setPeso}
+        placeholder="Ej: 70"
+        placeholderTextColor={darkMode ? "#888" : "#aaa"}
       />
 
       <Text style={styles.label}>Nivel de experiencia</Text>
-      <Picker
-        selectedValue={experiencia}
-        onValueChange={setExperiencia}
-        style={{ color: "#fff" }}
-        dropdownIconColor="#fff"
-      >
-        <Picker.Item label="Principiante" value="principiante" />
-        <Picker.Item label="Intermedio" value="intermedio" />
-        <Picker.Item label="Avanzado" value="avanzado" />
-      </Picker>
+      <DropDownPicker
+        open={openExperiencia}
+        value={experiencia}
+        items={experiencias}
+        setOpen={setOpenExperiencia}
+        setValue={setExperiencia}
+        setItems={() => {}}
+        onOpen={onOpenExperiencia}
+        style={styles.dropdown}
+        dropDownContainerStyle={styles.dropDownContainer}
+        placeholder="Selecciona nivel"
+        textStyle={styles.dropdownText}
+        listMode="SCROLLVIEW"
+        dropDownDirection="AUTO"
+      />
 
-      <Button title="Guardar y continuar" onPress={handleGuardar} />
-    </ScrollView>
+      <View style={{ marginTop: 20 }}>
+        <Button
+          title="Guardar y continuar"
+          onPress={handleGuardar}
+          color={darkMode ? "#1e90ff" : undefined}
+        />
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    backgroundColor: "#1e1e1e", // fondo gris oscuro
-    flexGrow: 1,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    color: "#ffffff", // texto blanco
-  },
-  label: {
-    fontWeight: "600",
-    marginTop: 10,
-    color: "#e0e0e0", // gris claro para visibilidad
-  },
-  input: {
-    borderColor: "#555", // bordes más oscuros
-    borderWidth: 1,
-    borderRadius: 6,
-    padding: 8,
-    marginTop: 4,
-    color: "#fff", // texto blanco
-    backgroundColor: "#2b2b2b", // fondo gris oscuro del input
-  },
-});
+const getStyles = (darkMode: boolean) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 20,
+      backgroundColor: darkMode ? "#121212" : "#fff",
+    },
+    title: {
+      fontSize: 24,
+      fontWeight: "bold",
+      marginBottom: 20,
+      color: darkMode ? "#fff" : "#000",
+    },
+    label: {
+      fontWeight: "600",
+      marginTop: 10,
+      marginBottom: 4,
+      color: darkMode ? "#ccc" : "#333",
+    },
+    input: {
+      borderColor: darkMode ? "#555" : "#999",
+      borderWidth: 1,
+      borderRadius: 6,
+      padding: 8,
+      color: darkMode ? "#fff" : "#000",
+      backgroundColor: darkMode ? "#2b2b2b" : "#f9f9f9",
+      marginBottom: 10,
+    },
+    dropdown: {
+      borderColor: darkMode ? "#555" : "#999",
+      backgroundColor: darkMode ? "#2b2b2b" : "#f9f9f9",
+      marginBottom: 10,
+    },
+    dropDownContainer: {
+      borderColor: darkMode ? "#555" : "#999",
+      backgroundColor: darkMode ? "#2b2b2b" : "#f9f9f9",
+    },
+    dropdownText: {
+      color: darkMode ? "#fff" : "#000",
+      fontSize: 16,
+    },
+  });
