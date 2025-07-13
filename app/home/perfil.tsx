@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  useColorScheme,
   View,
 } from "react-native";
 
@@ -24,6 +25,10 @@ type ConfiguracionUsuario = {
 
 export default function Perfil() {
   const router = useRouter();
+  const colorScheme = useColorScheme();
+  const scheme = colorScheme ?? "light";
+  const styles = getStyles(scheme);
+
   const [config, setConfig] = useState<ConfiguracionUsuario | null>(null);
   const [cargando, setCargando] = useState(true);
 
@@ -98,12 +103,32 @@ export default function Perfil() {
       </View>
 
       <View style={styles.card}>
-        <ProfileItem label="🎯 Objetivo" value={config.objetivo} />
-        <ProfileItem label="🎂 Edad" value={`${config.edad} años`} />
-        <ProfileItem label="🚻 Sexo" value={config.sexo} />
-        <ProfileItem label="📏 Altura" value={`${config.altura} cm`} />
-        <ProfileItem label="⚖️ Peso" value={`${config.peso} kg`} />
-        <ProfileItem label="💪 Nivel" value={config.experiencia} />
+        <ProfileItem
+          label="🎯 Objetivo"
+          value={config.objetivo}
+          styles={styles}
+        />
+        <ProfileItem
+          label="🎂 Edad"
+          value={`${config.edad} años`}
+          styles={styles}
+        />
+        <ProfileItem label="🚻 Sexo" value={config.sexo} styles={styles} />
+        <ProfileItem
+          label="📏 Altura"
+          value={`${config.altura} cm`}
+          styles={styles}
+        />
+        <ProfileItem
+          label="⚖️ Peso"
+          value={`${config.peso} kg`}
+          styles={styles}
+        />
+        <ProfileItem
+          label="💪 Nivel"
+          value={config.experiencia}
+          styles={styles}
+        />
       </View>
 
       <View style={{ marginTop: 30 }}>
@@ -117,7 +142,15 @@ export default function Perfil() {
   );
 }
 
-function ProfileItem({ label, value }: { label: string; value: string }) {
+function ProfileItem({
+  label,
+  value,
+  styles,
+}: {
+  label: string;
+  value: string;
+  styles: ReturnType<typeof getStyles>;
+}) {
   return (
     <View style={styles.item}>
       <Text style={styles.itemLabel}>{label}</Text>
@@ -126,75 +159,76 @@ function ProfileItem({ label, value }: { label: string; value: string }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    backgroundColor: "#121212",
-    flexGrow: 1,
-  },
-  centered: {
-    flex: 1,
-    backgroundColor: "#121212",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  loadingText: {
-    marginTop: 10,
-    color: "#bbb",
-    fontSize: 16,
-  },
-  errorText: {
-    fontSize: 18,
-    marginBottom: 20,
-    color: "#f44336",
-    textAlign: "center",
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 30,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#fff",
-  },
-  logoutButton: {
-    backgroundColor: "#f44336",
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 6,
-  },
-  logoutText: {
-    color: "#fff",
-    fontWeight: "600",
-  },
-  card: {
-    backgroundColor: "#1e1e1e",
-    borderRadius: 12,
-    padding: 20,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-  },
-  item: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 12,
-    borderBottomColor: "#333",
-    borderBottomWidth: 1,
-  },
-  itemLabel: {
-    color: "#aaa",
-    fontWeight: "600",
-    fontSize: 16,
-  },
-  itemValue: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 16,
-  },
-});
+const getStyles = (colorScheme: "light" | "dark" | null) =>
+  StyleSheet.create({
+    container: {
+      padding: 20,
+      backgroundColor: colorScheme === "dark" ? "#121212" : "#fff",
+      flexGrow: 1,
+    },
+    centered: {
+      flex: 1,
+      backgroundColor: colorScheme === "dark" ? "#121212" : "#fff",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 20,
+    },
+    loadingText: {
+      marginTop: 10,
+      color: colorScheme === "dark" ? "#bbb" : "#555",
+      fontSize: 16,
+    },
+    errorText: {
+      fontSize: 18,
+      marginBottom: 20,
+      color: "#f44336",
+      textAlign: "center",
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 30,
+    },
+    title: {
+      fontSize: 28,
+      fontWeight: "bold",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    logoutButton: {
+      backgroundColor: "#f44336",
+      paddingVertical: 6,
+      paddingHorizontal: 14,
+      borderRadius: 6,
+    },
+    logoutText: {
+      color: "#fff",
+      fontWeight: "600",
+    },
+    card: {
+      backgroundColor: colorScheme === "dark" ? "#1e1e1e" : "#f5f5f5",
+      borderRadius: 12,
+      padding: 20,
+      elevation: 5,
+      shadowColor: "#000",
+      shadowOpacity: 0.3,
+      shadowRadius: 5,
+    },
+    item: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      paddingVertical: 12,
+      borderBottomColor: colorScheme === "dark" ? "#333" : "#ccc",
+      borderBottomWidth: 1,
+    },
+    itemLabel: {
+      color: colorScheme === "dark" ? "#aaa" : "#666",
+      fontWeight: "600",
+      fontSize: 16,
+    },
+    itemValue: {
+      color: colorScheme === "dark" ? "#fff" : "#000",
+      fontWeight: "600",
+      fontSize: 16,
+    },
+  });

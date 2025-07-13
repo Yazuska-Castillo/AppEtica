@@ -10,7 +10,6 @@ export default function AlimentacionScreen() {
   const metaCalorias = 2540;
 
   const calorias = carbs * 4 + protein * 4 + fat * 9;
-  const porcentaje = Math.min((calorias / metaCalorias) * 100, 100);
 
   return (
     <View style={styles.container}>
@@ -23,16 +22,16 @@ export default function AlimentacionScreen() {
       <Text style={styles.subtitulo}>Calorías</Text>
       <View style={styles.sliderContainer}>
         <Text style={styles.valor}>{calorias.toFixed(0)}</Text>
-        <Slider
-          value={calorias}
-          minimumValue={0}
-          maximumValue={metaCalorias}
-          disabled={true}
-          style={styles.slider}
-          minimumTrackTintColor="#007bff"
-          maximumTrackTintColor="#ccc"
-          thumbTintColor="transparent"
-        />
+        <View style={styles.progressBackground}>
+          <View
+            style={[
+              styles.progressFill,
+              {
+                width: `${Math.min((calorias / metaCalorias) * 100, 100)}%`,
+              },
+            ]}
+          />
+        </View>
         <Text style={styles.valor}>{metaCalorias}</Text>
       </View>
 
@@ -98,5 +97,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     width: 50,
     textAlign: "center",
+  },
+  progressBackground: {
+    flex: 1,
+    height: 10,
+    backgroundColor: "#e0e0e0",
+    borderRadius: 5,
+    overflow: "hidden",
+  },
+  progressFill: {
+    height: 10,
+    backgroundColor: "#007bff",
+    borderRadius: 5,
   },
 });

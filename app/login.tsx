@@ -1,12 +1,21 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Alert,
+  Button,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  useColorScheme,
+} from "react-native";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const colorScheme = useColorScheme();
 
   const handleLogin = () => {
     if (email === "" || password === "") {
@@ -34,10 +43,8 @@ export default function LoginScreen() {
         );
 
         if (configResponse.ok) {
-          // Si tiene configuración, ir directo a home
           router.replace("/home/alimentacion");
         } else {
-          // Si no tiene configuración, ir a configurar
           router.replace("/configuracion");
         }
       })
@@ -46,6 +53,10 @@ export default function LoginScreen() {
       });
   };
 
+  // Estilos dinámicos según modo oscuro o claro
+  const scheme = colorScheme ?? "light";
+  const styles = getStyles(scheme);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>GYMPAL</Text>
@@ -53,59 +64,64 @@ export default function LoginScreen() {
       <TextInput
         style={styles.input}
         placeholder="Correo electrónico"
-        placeholderTextColor="#aaa"
+        placeholderTextColor={colorScheme === "dark" ? "#aaa" : "#555"}
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
         autoCapitalize="none"
-        selectionColor="#fff"
+        selectionColor={colorScheme === "dark" ? "#fff" : "#000"}
       />
 
       <TextInput
         style={styles.input}
         placeholder="Contraseña"
-        placeholderTextColor="#aaa"
+        placeholderTextColor={colorScheme === "dark" ? "#aaa" : "#555"}
         value={password}
         onChangeText={setPassword}
         secureTextEntry
-        selectionColor="#fff"
+        selectionColor={colorScheme === "dark" ? "#fff" : "#000"}
       />
 
-      <Button title="Iniciar Sesión" onPress={handleLogin} color="#4CAF50" />
+      <Button
+        title="Iniciar Sesión"
+        onPress={handleLogin}
+        color={colorScheme === "dark" ? "#4CAF50" : "#388E3C"}
+      />
 
       <View style={{ marginTop: 20 }}>
         <Button
           title="¿No tienes cuenta? Regístrate"
           onPress={() => router.push("/register")}
-          color="#2196F3"
+          color={colorScheme === "dark" ? "#2196F3" : "#1976D2"}
         />
       </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#1e1e1e", // fondo oscuro
-    padding: 24,
-    justifyContent: "center",
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 32,
-    textAlign: "center",
-    color: "#fff", // texto blanco para título
-  },
-  input: {
-    height: 50,
-    borderColor: "#555",
-    borderWidth: 1,
-    paddingHorizontal: 16,
-    marginBottom: 16,
-    borderRadius: 8,
-    backgroundColor: "#2b2b2b", // input fondo oscuro
-    color: "#fff", // texto blanco en input
-  },
-});
+const getStyles = (colorScheme: "light" | "dark" | null) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colorScheme === "dark" ? "#1e1e1e" : "#fff",
+      padding: 24,
+      justifyContent: "center",
+    },
+    title: {
+      fontSize: 28,
+      fontWeight: "bold",
+      marginBottom: 32,
+      textAlign: "center",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    input: {
+      height: 50,
+      borderColor: colorScheme === "dark" ? "#555" : "#aaa",
+      borderWidth: 1,
+      paddingHorizontal: 16,
+      marginBottom: 16,
+      borderRadius: 8,
+      backgroundColor: colorScheme === "dark" ? "#2b2b2b" : "#f5f5f5",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+  });

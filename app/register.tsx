@@ -8,11 +8,13 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  useColorScheme,
   View,
 } from "react-native";
 
 export default function RegisterScreen() {
   const router = useRouter();
+  const colorScheme = useColorScheme();
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -55,6 +57,9 @@ export default function RegisterScreen() {
     }
   };
 
+  const scheme = colorScheme ?? "light";
+  const styles = getStyles(scheme);
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Crear Cuenta</Text>
@@ -64,10 +69,10 @@ export default function RegisterScreen() {
         <TextInput
           style={styles.input}
           placeholder="Ej: juan_perez"
-          placeholderTextColor="#888"
+          placeholderTextColor={colorScheme === "dark" ? "#888" : "#555"}
           value={username}
           onChangeText={setUsername}
-          selectionColor="#fff"
+          selectionColor={colorScheme === "dark" ? "#fff" : "#000"}
         />
       </View>
 
@@ -76,12 +81,12 @@ export default function RegisterScreen() {
         <TextInput
           style={styles.input}
           placeholder="Ej: ejemplo@correo.com"
-          placeholderTextColor="#888"
+          placeholderTextColor={colorScheme === "dark" ? "#888" : "#555"}
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
-          selectionColor="#fff"
+          selectionColor={colorScheme === "dark" ? "#fff" : "#000"}
         />
       </View>
 
@@ -91,11 +96,11 @@ export default function RegisterScreen() {
           <TextInput
             style={styles.inputPassword}
             placeholder="Ej: ********"
-            placeholderTextColor="#888"
+            placeholderTextColor={colorScheme === "dark" ? "#888" : "#555"}
             value={password}
             onChangeText={setPassword}
             secureTextEntry={!showPassword}
-            selectionColor="#fff"
+            selectionColor={colorScheme === "dark" ? "#fff" : "#000"}
           />
           <Pressable onPress={() => setShowPassword(!showPassword)}>
             <Text style={styles.toggle}>
@@ -111,11 +116,11 @@ export default function RegisterScreen() {
           <TextInput
             style={styles.inputPassword}
             placeholder="Repite tu contraseña"
-            placeholderTextColor="#888"
+            placeholderTextColor={colorScheme === "dark" ? "#888" : "#555"}
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             secureTextEntry={!showConfirm}
-            selectionColor="#fff"
+            selectionColor={colorScheme === "dark" ? "#fff" : "#000"}
           />
           <Pressable onPress={() => setShowConfirm(!showConfirm)}>
             <Text style={styles.toggle}>{showConfirm ? "Ocultar" : "Ver"}</Text>
@@ -123,68 +128,73 @@ export default function RegisterScreen() {
         </View>
       </View>
 
-      <Button title="Registrarse" onPress={handleRegister} color="#4CAF50" />
+      <Button
+        title="Registrarse"
+        onPress={handleRegister}
+        color={colorScheme === "dark" ? "#4CAF50" : "#388E3C"}
+      />
 
       <View style={{ marginTop: 20 }}>
         <Button
           title="¿Ya tienes cuenta? Inicia sesión"
           onPress={() => router.push("/login")}
-          color="#2196F3"
+          color={colorScheme === "dark" ? "#2196F3" : "#1976D2"}
         />
       </View>
     </ScrollView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    backgroundColor: "#1e1e1e", // fondo oscuro
-    padding: 24,
-    justifyContent: "center",
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 32,
-    textAlign: "center",
-    color: "#fff", // texto blanco para título
-  },
-  field: {
-    marginBottom: 16,
-  },
-  label: {
-    marginBottom: 6,
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#ddd", // gris claro para etiquetas
-  },
-  input: {
-    height: 50,
-    borderColor: "#555",
-    borderWidth: 1,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    backgroundColor: "#2b2b2b", // fondo oscuro inputs
-    color: "#fff", // texto blanco inputs
-  },
-  passwordContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderColor: "#555",
-    borderWidth: 1,
-    borderRadius: 8,
-    backgroundColor: "#2b2b2b",
-    paddingRight: 10,
-  },
-  inputPassword: {
-    flex: 1,
-    height: 50,
-    paddingHorizontal: 16,
-    color: "#fff", // texto blanco input password
-  },
-  toggle: {
-    color: "#4CAF50", // verde para toggle ver/ocultar
-    fontWeight: "600",
-  },
-});
+const getStyles = (colorScheme: "light" | "dark" | null) =>
+  StyleSheet.create({
+    container: {
+      flexGrow: 1,
+      backgroundColor: colorScheme === "dark" ? "#1e1e1e" : "#fff",
+      padding: 24,
+      justifyContent: "center",
+    },
+    title: {
+      fontSize: 28,
+      fontWeight: "bold",
+      marginBottom: 32,
+      textAlign: "center",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    field: {
+      marginBottom: 16,
+    },
+    label: {
+      marginBottom: 6,
+      fontSize: 16,
+      fontWeight: "500",
+      color: colorScheme === "dark" ? "#ddd" : "#333",
+    },
+    input: {
+      height: 50,
+      borderColor: colorScheme === "dark" ? "#555" : "#aaa",
+      borderWidth: 1,
+      paddingHorizontal: 16,
+      borderRadius: 8,
+      backgroundColor: colorScheme === "dark" ? "#2b2b2b" : "#f5f5f5",
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    passwordContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      borderColor: colorScheme === "dark" ? "#555" : "#aaa",
+      borderWidth: 1,
+      borderRadius: 8,
+      backgroundColor: colorScheme === "dark" ? "#2b2b2b" : "#f5f5f5",
+      paddingRight: 10,
+    },
+    inputPassword: {
+      flex: 1,
+      height: 50,
+      paddingHorizontal: 16,
+      color: colorScheme === "dark" ? "#fff" : "#000",
+    },
+    toggle: {
+      color: "#4CAF50",
+      fontWeight: "600",
+    },
+  });
