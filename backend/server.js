@@ -9,6 +9,84 @@ app.use(express.json());
 
 const USUARIOS_PATH = path.join(__dirname, "usuarios.txt");
 const CONFIG_PATH = path.join(__dirname, "configuracion.txt");
+const PESO_PATH = path.join(__dirname, "peso.txt");
+const PROGRESO_PATH = path.join(__dirname, "progreso.txt");
+
+// Guardar peso
+app.post("/api/peso", (req, res) => {
+  const { username, fecha, peso } = req.body;
+
+  const pesoNum = parseFloat(peso);
+
+  if (!username || !fecha || isNaN(pesoNum) || pesoNum <= 0) {
+    return res.status(400).json({ message: "Peso inválido o faltan datos." });
+  }
+
+  const linea = `${username}|${fecha}|${pesoNum}\n`;
+
+  fs.appendFile(PESO_PATH, linea, (err) => {
+    if (err) {
+      console.error("❌ Error guardando peso:", err);
+      return res.status(500).json({ message: "Error guardando peso." });
+    }
+    console.log("✅ Peso guardado:", linea.trim());
+    res.json({ message: "Peso guardado correctamente." });
+  });
+});
+
+// Obtener pesos
+app.get("/api/peso/:username", (req, res) => {
+  const { username } = req.params;
+  fs.readFile(PESO_PATH, "utf8", (err, data) => {
+    if (err) return res.status(500).json({ message: "Error leyendo pesos." });
+    const lineas = data.split("\n").filter(Boolean);
+    const registros = lineas
+      .filter((line) => line.startsWith(username + "|"))
+      .map((line) => {
+        const [, fecha, peso] = line.split("|");
+        return { fecha, peso: parseFloat(peso) };
+      });
+    res.json(registros);
+  });
+});
+
+// Guardar progreso ejercicio
+app.post("/api/progreso", (req, res) => {
+  const { username, fecha, ejercicio, peso, repeticiones, series } = req.body;
+  if (!username || !fecha || !ejercicio || !peso || !repeticiones || !series) {
+    return res.status(400).json({ message: "Faltan datos para progreso." });
+  }
+  const linea = `${username}|${fecha}|${ejercicio}|${peso}|${repeticiones}|${series}\n`;
+  fs.appendFile(PROGRESO_PATH, linea, (err) => {
+    if (err)
+      return res.status(500).json({ message: "Error guardando progreso." });
+    res.json({ message: "Progreso guardado correctamente." });
+  });
+});
+
+// Obtener progreso ejercicio
+app.get("/api/progreso/:username", (req, res) => {
+  const { username } = req.params;
+  fs.readFile(PROGRESO_PATH, "utf8", (err, data) => {
+    if (err)
+      return res.status(500).json({ message: "Error leyendo progreso." });
+    const lineas = data.split("\n").filter(Boolean);
+    const registros = lineas
+      .filter((line) => line.startsWith(username + "|"))
+      .map((line) => {
+        const [, fecha, ejercicio, peso, repeticiones, series] =
+          line.split("|");
+        return {
+          fecha,
+          ejercicio,
+          peso: parseFloat(peso),
+          repeticiones: parseInt(repeticiones),
+          series: parseInt(series),
+        };
+      });
+    res.json(registros);
+  });
+});
 
 // Registro usuario
 app.post("/api/register", (req, res) => {
