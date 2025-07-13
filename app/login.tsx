@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
@@ -25,9 +26,23 @@ export default function LoginScreen() {
         }
         return res.json();
       })
-      .then((data) => {
+      .then(async (data) => {
+        // Guardar usuario en AsyncStorage
+        await AsyncStorage.setItem("user", JSON.stringify(data.user));
         Alert.alert("Bienvenido", `Hola ${data.user.name}`);
-        router.push("/home/alimentacion");
+
+        // Consultar configuración
+        const configResponse = await fetch(
+          `http://192.168.1.128:3000/api/configuracion/${data.user.name}`
+        );
+
+        if (configResponse.ok) {
+          // Si tiene configuración, ir directo a home
+          router.replace("/home/alimentacion");
+        } else {
+          // Si no tiene configuración, ir a configurar
+          router.replace("/configuracion");
+        }
       })
       .catch((err) => {
         Alert.alert("Error", err.message);
@@ -36,7 +51,7 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Gimnasio Integral</Text>
+      <Text style={styles.title}>GYMPAL</Text>
 
       <TextInput
         style={styles.input}
