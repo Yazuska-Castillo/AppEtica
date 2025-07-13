@@ -58,7 +58,7 @@ export default function SeleccionAlimentosFlexible() {
   const navigation = useNavigation();
 
   useLayoutEffect(() => {
-    navigation.setOptions({ headerShown: false });
+    navigation.setOptions({ headerShown: true });
   }, [navigation]);
 
   const [cantidades, setCantidades] = useState<Record<string, number>>({});

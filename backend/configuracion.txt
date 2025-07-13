@@ -1,2 +1,3 @@
 Yazua|ganar masa muscular|20|femenino|160|10|principiante
 Hola|tonificar|38|masculino|1|1|principiante
+GenesisA|bajar de peso|28|femenino|175|200|principiante
