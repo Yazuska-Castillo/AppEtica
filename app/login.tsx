@@ -10,10 +10,28 @@ export default function LoginScreen() {
   const handleLogin = () => {
     if (email === "" || password === "") {
       Alert.alert("Error", "Por favor completa todos los campos.");
-    } else {
-      // Aquí puedes conectar con tu backend o lógica de autenticación
-      Alert.alert("Bienvenido", `Correo: ${email}`);
+      return;
     }
+
+    fetch("http://192.168.1.128:3000/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.message || "Error en la autenticación");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        Alert.alert("Bienvenido", `Hola ${data.user.name}`);
+        router.push("/home/alimentacion");
+      })
+      .catch((err) => {
+        Alert.alert("Error", err.message);
+      });
   };
 
   return (
@@ -39,7 +57,6 @@ export default function LoginScreen() {
 
       <Button title="Iniciar Sesión" onPress={handleLogin} />
 
-      {/* Botón para ir a registro */}
       <View style={{ marginTop: 20 }}>
         <Button
           title="¿No tienes cuenta? Regístrate"

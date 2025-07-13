@@ -21,7 +21,7 @@ export default function RegisterScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (!username || !email || !password || !confirmPassword) {
       Alert.alert("Error", "Por favor completa todos los campos.");
       return;
@@ -32,8 +32,27 @@ export default function RegisterScreen() {
       return;
     }
 
-    Alert.alert("Registro exitoso", `Usuario registrado: ${username}`);
-    router.replace("/login");
+    try {
+      const response = await fetch("http://192.168.1.128:3000/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert("Registro exitoso", data.message);
+        router.replace("/login");
+      } else {
+        Alert.alert("Error", data.message || "Algo salió mal");
+      }
+    } catch (error) {
+      Alert.alert("Error", "No se pudo conectar con el servidor");
+      console.error(error);
+    }
   };
 
   return (
