@@ -64,8 +64,10 @@ export default function RegisterScreen() {
         <TextInput
           style={styles.input}
           placeholder="Ej: juan_perez"
+          placeholderTextColor="#888"
           value={username}
           onChangeText={setUsername}
+          selectionColor="#fff"
         />
       </View>
 
@@ -74,10 +76,12 @@ export default function RegisterScreen() {
         <TextInput
           style={styles.input}
           placeholder="Ej: ejemplo@correo.com"
+          placeholderTextColor="#888"
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
+          selectionColor="#fff"
         />
       </View>
 
@@ -87,9 +91,11 @@ export default function RegisterScreen() {
           <TextInput
             style={styles.inputPassword}
             placeholder="Ej: ********"
+            placeholderTextColor="#888"
             value={password}
             onChangeText={setPassword}
             secureTextEntry={!showPassword}
+            selectionColor="#fff"
           />
           <Pressable onPress={() => setShowPassword(!showPassword)}>
             <Text style={styles.toggle}>
@@ -105,9 +111,11 @@ export default function RegisterScreen() {
           <TextInput
             style={styles.inputPassword}
             placeholder="Repite tu contraseña"
+            placeholderTextColor="#888"
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             secureTextEntry={!showConfirm}
+            selectionColor="#fff"
           />
           <Pressable onPress={() => setShowConfirm(!showConfirm)}>
             <Text style={styles.toggle}>{showConfirm ? "Ocultar" : "Ver"}</Text>
@@ -115,12 +123,13 @@ export default function RegisterScreen() {
         </View>
       </View>
 
-      <Button title="Registrarse" onPress={handleRegister} />
+      <Button title="Registrarse" onPress={handleRegister} color="#4CAF50" />
 
       <View style={{ marginTop: 20 }}>
         <Button
           title="¿Ya tienes cuenta? Inicia sesión"
           onPress={() => router.push("/login")}
+          color="#2196F3"
         />
       </View>
     </ScrollView>
@@ -130,7 +139,7 @@ export default function RegisterScreen() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#1e1e1e", // fondo oscuro
     padding: 24,
     justifyContent: "center",
   },
@@ -139,7 +148,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 32,
     textAlign: "center",
-    color: "#2c3e50",
+    color: "#fff", // texto blanco para título
   },
   field: {
     marginBottom: 16,
@@ -148,32 +157,34 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     fontSize: 16,
     fontWeight: "500",
-    color: "#34495e",
+    color: "#ddd", // gris claro para etiquetas
   },
   input: {
     height: 50,
-    borderColor: "#ccc",
+    borderColor: "#555",
     borderWidth: 1,
     paddingHorizontal: 16,
     borderRadius: 8,
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#2b2b2b", // fondo oscuro inputs
+    color: "#fff", // texto blanco inputs
   },
   passwordContainer: {
     flexDirection: "row",
     alignItems: "center",
-    borderColor: "#ccc",
+    borderColor: "#555",
     borderWidth: 1,
     borderRadius: 8,
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#2b2b2b",
     paddingRight: 10,
   },
   inputPassword: {
     flex: 1,
     height: 50,
     paddingHorizontal: 16,
+    color: "#fff", // texto blanco input password
   },
   toggle: {
-    color: "#007AFF",
-    fontWeight: "500",
+    color: "#4CAF50", // verde para toggle ver/ocultar
+    fontWeight: "600",
   },
 });

@@ -24,7 +24,6 @@ export default function Configuracion() {
   const [experiencia, setExperiencia] = useState("principiante");
 
   useEffect(() => {
-    // Obtener usuario guardado al montar el componente
     AsyncStorage.getItem("user")
       .then((json) => {
         if (json) {
@@ -103,7 +102,12 @@ export default function Configuracion() {
       <Text style={styles.title}>Configuración Inicial</Text>
 
       <Text style={styles.label}>Objetivo físico</Text>
-      <Picker selectedValue={objetivo} onValueChange={setObjetivo}>
+      <Picker
+        selectedValue={objetivo}
+        onValueChange={setObjetivo}
+        style={{ color: "#fff" }}
+        dropdownIconColor="#fff"
+      >
         <Picker.Item label="Ganar masa muscular" value="ganar masa muscular" />
         <Picker.Item label="Tonificar" value="tonificar" />
         <Picker.Item label="Bajar de peso" value="bajar de peso" />
@@ -118,7 +122,12 @@ export default function Configuracion() {
       />
 
       <Text style={styles.label}>Sexo</Text>
-      <Picker selectedValue={sexo} onValueChange={setSexo}>
+      <Picker
+        selectedValue={sexo}
+        onValueChange={setSexo}
+        style={{ color: "#fff" }}
+        dropdownIconColor="#fff"
+      >
         <Picker.Item label="Masculino" value="masculino" />
         <Picker.Item label="Femenino" value="femenino" />
       </Picker>
@@ -140,7 +149,12 @@ export default function Configuracion() {
       />
 
       <Text style={styles.label}>Nivel de experiencia</Text>
-      <Picker selectedValue={experiencia} onValueChange={setExperiencia}>
+      <Picker
+        selectedValue={experiencia}
+        onValueChange={setExperiencia}
+        style={{ color: "#fff" }}
+        dropdownIconColor="#fff"
+      >
         <Picker.Item label="Principiante" value="principiante" />
         <Picker.Item label="Intermedio" value="intermedio" />
         <Picker.Item label="Avanzado" value="avanzado" />
@@ -154,23 +168,27 @@ export default function Configuracion() {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: "#1e1e1e", // fondo gris oscuro
     flexGrow: 1,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
+    color: "#ffffff", // texto blanco
   },
   label: {
     fontWeight: "600",
     marginTop: 10,
+    color: "#e0e0e0", // gris claro para visibilidad
   },
   input: {
-    borderColor: "#ccc",
+    borderColor: "#555", // bordes más oscuros
     borderWidth: 1,
     borderRadius: 6,
     padding: 8,
     marginTop: 4,
+    color: "#fff", // texto blanco
+    backgroundColor: "#2b2b2b", // fondo gris oscuro del input
   },
 });
