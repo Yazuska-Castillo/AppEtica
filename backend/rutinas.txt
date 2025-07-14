@@ -1,0 +1,4 @@
+{"username":"Yazua","nombre":"7","descripcion":"2","ejercicios":[{"nombre":"4","peso":1,"repeticiones":9,"series":9}]}
+{"username":"Yazua","nombre":"3","descripcion":"8","ejercicios":[{"nombre":"3","peso":9,"repeticiones":7,"series":97}]}
+{"username":"Yazua","nombre":"Ka","descripcion":"Nbs","ejercicios":[{"nombre":"1","peso":1,"repeticiones":5,"series":0}]}
+{"username":"Yazua","nombre":"Ijd","descripcion":"Jbs","ejercicios":[{"nombre":"Ibd","peso":694,"repeticiones":979,"series":4997}]}

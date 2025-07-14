@@ -36,15 +36,23 @@ export default function LoginScreen() {
         return res.json();
       })
       .then(async (data) => {
+        // Guardar usuario completo (puede incluir name, email, etc)
         await AsyncStorage.setItem("user", JSON.stringify(data.user));
+
         Alert.alert("Bienvenido", `Hola ${data.user.name}`);
+
+        // Comprobar si tiene configuración guardada
         const configResponse = await fetch(
-          `http://192.168.1.128:3000/api/configuracion/${data.user.name}`
+          `http://192.168.1.128:3000/api/configuracion/${encodeURIComponent(
+            data.user.name
+          )}`
         );
 
         if (configResponse.ok) {
+          // Si tiene configuración, va a alimentación
           router.replace("/home/alimentacion");
         } else {
+          // Si no, va a pantalla de configuración
           router.replace("/configuracion");
         }
       })
@@ -53,9 +61,7 @@ export default function LoginScreen() {
       });
   };
 
-  // Estilos dinámicos según modo oscuro o claro
-  const scheme = colorScheme ?? "light";
-  const styles = getStyles(scheme);
+  const styles = getStyles(colorScheme ?? "light");
 
   return (
     <View style={styles.container}>
@@ -99,7 +105,7 @@ export default function LoginScreen() {
   );
 }
 
-const getStyles = (colorScheme: "light" | "dark" | null) =>
+const getStyles = (colorScheme: "light" | "dark") =>
   StyleSheet.create({
     container: {
       flex: 1,

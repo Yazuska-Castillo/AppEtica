@@ -11,6 +11,133 @@ const USUARIOS_PATH = path.join(__dirname, "usuarios.txt");
 const CONFIG_PATH = path.join(__dirname, "configuracion.txt");
 const PESO_PATH = path.join(__dirname, "peso.txt");
 const PROGRESO_PATH = path.join(__dirname, "progreso.txt");
+const RUTINAS_PATH = path.join(__dirname, "rutinas.txt");
+
+// Guardar rutina
+app.post("/api/rutinas", (req, res) => {
+  const { username, nombre, descripcion, ejercicios } = req.body;
+
+  if (!username || !nombre || !Array.isArray(ejercicios)) {
+    return res.status(400).json({ message: "Datos incompletos" });
+  }
+
+  const id = generarId();
+  console.log("Enviando respuesta con id:", id);
+
+  const ejerciciosPlano = ejercicios
+    .map((e) => `${e.nombre},${e.peso},${e.repeticiones},${e.series}`)
+    .join(";");
+
+  const nuevaLinea = `${id}|${username}|${nombre}|${descripcion}|${ejerciciosPlano}\n`;
+
+  console.log("Guardando rutina:", nuevaLinea);
+
+  fs.appendFile(RUTINAS_PATH, nuevaLinea, (err) => {
+    if (err) {
+      console.error("Error escribiendo rutina:", err);
+      return res.status(500).json({ message: "Error guardando rutina" });
+    }
+    res.json({ id, username, nombre, descripcion, ejercicios });
+  });
+});
+
+// Obtener rutinas de un usuario
+app.get("/api/rutinas/:username", (req, res) => {
+  const { username } = req.params;
+
+  fs.readFile(RUTINAS_PATH, "utf8", (err, data) => {
+    if (err) {
+      if (err.code === "ENOENT") return res.json([]); // archivo no existe
+      return res.status(500).json({ message: "Error leyendo rutinas" });
+    }
+
+    const lineas = data.split("\n").filter(Boolean);
+    const rutinas = lineas
+      .map((line) => {
+        const [user, nombre, descripcion, ejerciciosPlano] = line.split("|");
+        const ejercicios = ejerciciosPlano
+          ? ejerciciosPlano.split(";").map((e) => {
+              const [nombre, peso, repeticiones, series] = e.split(",");
+              return {
+                nombre,
+                peso: Number(peso),
+                repeticiones: Number(repeticiones),
+                series: Number(series),
+              };
+            })
+          : [];
+        return { username: user, nombre, descripcion, ejercicios };
+      })
+      .filter((rutina) => rutina.username === username); // filtramos por usuario
+
+    res.json(rutinas);
+  });
+});
+
+app.get("/api/rutina/:id", (req, res) => {
+  const { id } = req.params;
+
+  fs.readFile(RUTINAS_PATH, "utf8", (err, data) => {
+    if (err) return res.status(500).json({ message: "Error leyendo rutinas" });
+
+    const linea = data
+      .split("\n")
+      .filter(Boolean)
+      .find((line) => line.startsWith(id + "|"));
+
+    if (!linea)
+      return res.status(404).json({ message: "Rutina no encontrada" });
+
+    const [rutinaId, username, nombre, descripcion, ejerciciosPlano] =
+      linea.split("|");
+    const ejercicios = ejerciciosPlano
+      ? ejerciciosPlano.split(";").map((e) => {
+          const [nombre, peso, repeticiones, series] = e.split(",");
+          return {
+            nombre,
+            peso: Number(peso),
+            repeticiones: Number(repeticiones),
+            series: Number(series),
+          };
+        })
+      : [];
+
+    res.json({ id: rutinaId, username, nombre, descripcion, ejercicios });
+  });
+});
+
+// Ruta para obtener una rutina específica por nombre
+app.put("/api/rutina/:id", (req, res) => {
+  const { id } = req.params;
+  const { nombre, descripcion, ejercicios } = req.body;
+
+  if (!nombre || !descripcion || !Array.isArray(ejercicios)) {
+    return res.status(400).json({ message: "Datos incompletos" });
+  }
+
+  fs.readFile(RUTINAS_PATH, "utf8", (err, data) => {
+    if (err) return res.status(500).json({ message: "Error leyendo archivo" });
+
+    const lineas = data.split("\n").filter(Boolean);
+    const nuevasLineas = lineas.map((linea) => {
+      const [rutinaId, user, nom, desc, ejer] = linea.split("|");
+
+      if (rutinaId === id) {
+        const ejerciciosPlano = ejercicios
+          .map((e) => `${e.nombre},${e.peso},${e.repeticiones},${e.series}`)
+          .join(";");
+        return `${id}|${user}|${nombre}|${descripcion}|${ejerciciosPlano}`;
+      }
+      return linea;
+    });
+
+    fs.writeFile(RUTINAS_PATH, nuevasLineas.join("\n") + "\n", (err) => {
+      if (err)
+        return res.status(500).json({ message: "Error escribiendo archivo" });
+      res.json({ message: "Rutina actualizada correctamente" });
+    });
+  });
+});
 
 // Guardar peso
 app.post("/api/peso", (req, res) => {
