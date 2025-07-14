@@ -8,6 +8,7 @@ import React, {
   useState,
 } from "react";
 import {
+  ActivityIndicator,
   Alert,
   FlatList,
   StyleSheet,
@@ -24,79 +25,69 @@ type Ejercicio = {
 };
 
 type Rutina = {
-  username?: string;
+  ID: string;
+  username: string;
   nombre: string;
-  descripcion?: string;
+  descripcion: string;
   ejercicios: Ejercicio[];
 };
 
 export default function ListaRutinas() {
-  const [rutinas, setRutinas] = useState<Rutina[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [username, setUsername] = useState<string | null>(null);
   const router = useRouter();
+  const [rutinas, setRutinas] = useState<Rutina[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState<string | null>(null);
   const navigation = useNavigation();
 
   useLayoutEffect(() => {
     navigation.setOptions({ headerShown: false });
   }, [navigation]);
 
-  // Cargar username de AsyncStorage al montar componente
-  useEffect(() => {
-    const cargarUsuario = async () => {
-      try {
-        const userStr = await AsyncStorage.getItem("user");
-        if (!userStr) {
-          Alert.alert("Error", "Por favor inicia sesión.");
-          router.replace("/login");
-          return;
-        }
-        const user = JSON.parse(userStr);
-        const name = user.name || user.email || null;
-        if (!name) {
-          Alert.alert(
-            "Error",
-            "No se pudo obtener el usuario. Por favor inicia sesión."
-          );
-          router.replace("/login");
-          return;
-        }
-        setUsername(name);
-      } catch (error) {
-        Alert.alert("Error", "No se pudo cargar el usuario.");
-        router.replace("/login");
-      }
-    };
-    cargarUsuario();
-  }, []);
-
-  // Cuando tenemos username, cargar rutinas
-  useFocusEffect(
-    useCallback(() => {
-      if (username) {
-        cargarRutinas();
-      }
-    }, [username])
-  );
-
-  const cargarRutinas = async () => {
-    setLoading(true);
+  const cargarUsuario = async () => {
     try {
-      const res = await fetch(
-        `http://192.168.1.128:3000/api/rutinas/${encodeURIComponent(username!)}`
-      );
+      const userString = await AsyncStorage.getItem("user");
+      if (userString) {
+        const user = JSON.parse(userString);
+        const nombreUsuario = user.name || user.username || null;
+        setUsername(nombreUsuario);
+      } else {
+        console.log("No se encontró usuario en AsyncStorage");
+      }
+    } catch (error) {
+      console.error("Error cargando usuario:", error);
+    }
+  };
+
+  const cargarRutinas = async (user: string) => {
+    try {
+      setLoading(true);
+      const res = await fetch(`http://192.168.1.128:3000/api/rutinas/${user}`);
       if (!res.ok) throw new Error("Error cargando rutinas");
-      const data = await res.json();
+      const data: Rutina[] = await res.json();
       setRutinas(data);
     } catch (error) {
-      console.error("Error en cargarRutinas:", error);
       Alert.alert("Error", "No se pudieron cargar las rutinas");
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  const eliminarRutina = (index: number) => {
+  useEffect(() => {
+    (async () => {
+      await cargarUsuario();
+    })();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (username) {
+        cargarRutinas(username);
+      }
+    }, [username])
+  );
+
+  const eliminarRutina = (id: string) => {
     Alert.alert("Confirmar", "¿Seguro que quieres eliminar esta rutina?", [
       { text: "Cancelar", style: "cancel" },
       {
@@ -105,14 +96,14 @@ export default function ListaRutinas() {
         onPress: async () => {
           try {
             const res = await fetch(
-              `http://192.168.1.128:3000/api/rutinas/${index}`,
+              `http://192.168.1.128:3000/api/rutina/${id}`,
               {
                 method: "DELETE",
               }
             );
             if (!res.ok) throw new Error("Error eliminando rutina");
             Alert.alert("Éxito", "Rutina eliminada");
-            cargarRutinas();
+            if (username) cargarRutinas(username);
           } catch (err) {
             console.error("Error eliminando rutina:", err);
             Alert.alert("Error", "No se pudo eliminar la rutina");
@@ -122,90 +113,101 @@ export default function ListaRutinas() {
     ]);
   };
 
-  const renderItem = ({ item, index }: { item: Rutina; index: number }) => (
-    <View style={styles.item}>
+  const editarRutina = (id: string) => {
+    router.push(`/home/rutinas/editar?id=${id}`);
+  };
+
+  const nuevaRutina = () => {
+    router.push("/home/rutinas/nueva");
+  };
+
+  const renderItem = ({ item }: { item: Rutina }) => (
+    <View style={styles.itemContainer}>
       <View style={{ flex: 1 }}>
         <Text style={styles.nombre}>{item.nombre}</Text>
-        {item.descripcion ? <Text>{item.descripcion}</Text> : null}
-        {item.ejercicios.length > 0 && (
-          <View style={{ marginTop: 4 }}>
-            {item.ejercicios.map((ej, i) => (
-              <Text key={i} style={{ fontSize: 12, color: "#555" }}>
-                {`${ej.nombre} - Peso: ${ej.peso}, Reps: ${ej.repeticiones}, Series: ${ej.series}`}
-              </Text>
-            ))}
-          </View>
-        )}
+        <Text style={styles.descripcion}>{item.descripcion}</Text>
       </View>
       <TouchableOpacity
-        style={[styles.btn, styles.btnEditar]}
-        onPress={() =>
-          router.push({
-            pathname: "/home/rutinas/editar",
-            params: { index: index.toString() },
-          })
-        }
+        style={styles.btnEditar}
+        onPress={() => editarRutina(item.ID)}
       >
-        <Text style={styles.btnText}>Editar</Text>
+        <Text style={{ color: "white" }}>Editar</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={[styles.btn, styles.btnEliminar]}
-        onPress={() => eliminarRutina(index)}
+        style={styles.btnEliminar}
+        onPress={() => eliminarRutina(item.ID)}
       >
-        <Text style={styles.btnText}>Eliminar</Text>
+        <Text style={{ color: "white" }}>Eliminar</Text>
       </TouchableOpacity>
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.btnAgregar}
-        onPress={() => router.push("/home/rutinas/nueva")}
-      >
-        <Text style={styles.btnText}>+ Nueva Rutina</Text>
-      </TouchableOpacity>
+      <Text style={styles.titulo}>Mis Rutinas</Text>
       {loading ? (
-        <Text>Cargando rutinas...</Text>
+        <ActivityIndicator size="large" color="#0066cc" />
       ) : rutinas.length === 0 ? (
-        <Text>No hay rutinas creadas.</Text>
+        <Text style={{ textAlign: "center", marginTop: 20 }}>
+          No hay rutinas aún
+        </Text>
       ) : (
         <FlatList
           data={rutinas}
-          keyExtractor={(_, index) => index.toString()}
+          keyExtractor={(item) => item.ID}
           renderItem={renderItem}
-          contentContainerStyle={{ paddingBottom: 16 }}
+          contentContainerStyle={{ paddingBottom: 80 }}
         />
       )}
+
+      <TouchableOpacity style={styles.btnNueva} onPress={nuevaRutina}>
+        <Text style={styles.btnNuevaTexto}>+</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  item: {
+  container: { flex: 1, padding: 16, backgroundColor: "#fff" },
+  titulo: { fontSize: 24, fontWeight: "bold", marginBottom: 16 },
+  itemContainer: {
     flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 12,
     padding: 12,
     backgroundColor: "#eee",
     borderRadius: 8,
+    marginBottom: 12,
+    alignItems: "center",
   },
-  nombre: { fontWeight: "bold", fontSize: 16 },
-  btn: {
-    marginLeft: 8,
+  nombre: { fontSize: 18, fontWeight: "bold" },
+  descripcion: { fontSize: 14, color: "#555" },
+  btnEditar: {
+    backgroundColor: "#007bff",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    marginHorizontal: 6,
+  },
+  btnEliminar: {
+    backgroundColor: "#dc3545",
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 6,
   },
-  btnEditar: { backgroundColor: "#4CAF50" },
-  btnEliminar: { backgroundColor: "#F44336" },
-  btnText: { color: "white", fontWeight: "bold" },
-  btnAgregar: {
-    backgroundColor: "#2196F3",
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 16,
+  btnNueva: {
+    position: "absolute",
+    bottom: 24,
+    right: 24,
+    backgroundColor: "#28a745",
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: "center",
     alignItems: "center",
+    elevation: 5,
+  },
+  btnNuevaTexto: {
+    color: "#fff",
+    fontSize: 32,
+    lineHeight: 32,
   },
 });

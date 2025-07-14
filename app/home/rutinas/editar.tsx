@@ -1,10 +1,8 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
   Alert,
   Button,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -14,73 +12,116 @@ import {
 
 type Ejercicio = {
   nombre: string;
-  peso: string;
-  repeticiones: string;
-  series: string;
+  peso: number;
+  repeticiones: number;
+  series: number;
+};
+
+type Rutina = {
+  ID: string;
+  username: string;
+  nombre: string;
+  descripcion: string;
+  ejercicios: Ejercicio[];
 };
 
 export default function EditarRutina() {
-  const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const navigation = useNavigation();
+  const { id } = useLocalSearchParams();
+
+  const [rutina, setRutina] = useState<Rutina | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const [nombre, setNombre] = useState("");
-  const [descripcion, setDescripcion] = useState(""); // opcional
-  const [ejercicios, setEjercicios] = useState<Ejercicio[]>([
-    { nombre: "", peso: "", repeticiones: "", series: "" },
-  ]);
-  const [loading, setLoading] = useState(true);
-  const [username, setUsername] = useState<string | null>(null);
+  const [descripcion, setDescripcion] = useState("");
+  const [ejercicios, setEjercicios] = useState<Ejercicio[]>([]);
 
-  // Cargar usuario y rutina al iniciar
+  useLayoutEffect(() => {
+    navigation.setOptions({ headerShown: true });
+  }, [navigation]);
+
   useEffect(() => {
-    async function cargarDatos() {
+    if (!id || typeof id !== "string") {
+      console.log("[EditarRutina] ID inválido:", id);
+      Alert.alert("Error", "ID de rutina no válido.");
+      router.back();
+      return;
+    }
+
+    const cargarRutina = async () => {
       try {
-        // Obtener usuario del AsyncStorage
-        const userStr = await AsyncStorage.getItem("user");
-        if (!userStr) {
-          Alert.alert("Error", "Por favor inicia sesión.");
-          router.replace("/login");
-          return;
-        }
-        const user = JSON.parse(userStr);
-        const userName = user.name || user.email || null;
-        setUsername(userName);
+        console.log("[EditarRutina] Cargando rutina con ID:", id);
+        setLoading(true);
+        const res = await fetch(`http://192.168.1.128:3000/api/rutina/${id}`);
+        console.log("[EditarRutina] Respuesta fetch:", res.status);
+        if (!res.ok) throw new Error("No se pudo cargar la rutina");
+        const data: Rutina = await res.json();
+        console.log("[EditarRutina] Datos recibidos:", data);
 
-        if (!id) {
-          setLoading(false);
-          return;
-        }
-
-        const res = await fetch(
-          `http://192.168.1.128:3000/api/rutina/${encodeURIComponent(id)}`
-        );
-        if (!res.ok) throw new Error("Error cargando rutina");
-
-        const data = await res.json();
-
-        setNombre(data.nombre || "");
-        setDescripcion(data.descripcion || "");
-        // Mapear ejercicios para que tengan strings (por si vienen como números)
-        const ejParsed = (data.ejercicios || []).map((ej: any) => ({
-          nombre: ej.nombre || "",
-          peso: String(ej.peso ?? ""),
-          repeticiones: String(ej.repeticiones ?? ""),
-          series: String(ej.series ?? ""),
-        }));
-        setEjercicios(
-          ejParsed.length
-            ? ejParsed
-            : [{ nombre: "", peso: "", repeticiones: "", series: "" }]
-        );
+        setRutina(data);
+        setNombre(data.nombre);
+        setDescripcion(data.descripcion);
+        setEjercicios(data.ejercicios);
       } catch (error) {
-        console.error("Error al cargar la rutina:", error);
+        console.error("[EditarRutina] Error cargando rutina:", error);
         Alert.alert("Error", "No se pudo cargar la rutina");
+        router.back();
       } finally {
         setLoading(false);
+        console.log("[EditarRutina] Loading finalizado");
       }
-    }
-    cargarDatos();
+    };
+
+    cargarRutina();
   }, [id]);
+
+  const guardarCambios = async () => {
+    if (!rutina) {
+      console.log("[EditarRutina] Intento de guardar sin rutina cargada");
+      return;
+    }
+
+    if (!nombre.trim() || !descripcion.trim()) {
+      console.log("[EditarRutina] Nombre o descripción vacíos");
+      Alert.alert("Error", "Nombre y descripción son obligatorios");
+      return;
+    }
+
+    try {
+      const body: Rutina = {
+        ID: rutina.ID,
+        username: rutina.username,
+        nombre,
+        descripcion,
+        ejercicios,
+      };
+      console.log("[EditarRutina] Enviando datos para guardar:", body);
+
+      const res = await fetch("http://192.168.1.128:3000/api/rutinas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      console.log("[EditarRutina] Respuesta guardar:", res.status);
+
+      if (!res.ok) throw new Error("Error al guardar rutina");
+
+      Alert.alert("Éxito", "Rutina actualizada correctamente");
+      router.push("/home/rutinas");
+    } catch (error) {
+      console.error("[EditarRutina] Error guardando rutina:", error);
+      Alert.alert("Error", "No se pudo guardar la rutina");
+    }
+  };
+
+  const agregarEjercicio = () => {
+    setEjercicios((prev) => [
+      ...prev,
+      { nombre: "", peso: 0, repeticiones: 0, series: 0 },
+    ]);
+  };
 
   const actualizarEjercicio = (
     index: number,
@@ -88,206 +129,133 @@ export default function EditarRutina() {
     valor: string
   ) => {
     const nuevos = [...ejercicios];
-    nuevos[index][campo] = valor;
+    if (campo === "peso" || campo === "repeticiones" || campo === "series") {
+      nuevos[index][campo] = parseInt(valor) || 0;
+    } else {
+      nuevos[index][campo] = valor;
+    }
     setEjercicios(nuevos);
   };
 
-  const agregarEjercicio = () => {
-    setEjercicios([
-      ...ejercicios,
-      { nombre: "", peso: "", repeticiones: "", series: "" },
-    ]);
-  };
-
   const eliminarEjercicio = (index: number) => {
-    if (ejercicios.length === 1) {
-      Alert.alert("Error", "Debe haber al menos un ejercicio.");
-      return;
-    }
-    setEjercicios(ejercicios.filter((_, i) => i !== index));
+    const nuevos = [...ejercicios];
+    nuevos.splice(index, 1);
+    setEjercicios(nuevos);
   };
 
-  const guardarCambios = async () => {
-    if (!username) {
-      Alert.alert("Error", "No hay usuario autenticado.");
-      router.replace("/login");
-      return;
-    }
-    if (!id) {
-      Alert.alert("Error", "ID de rutina inválido.");
-      return;
-    }
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <Text>Cargando rutina...</Text>
+      </View>
+    );
+  }
 
-    if (!nombre.trim()) {
-      Alert.alert("Error", "El nombre es obligatorio");
-      return;
-    }
-
-    for (let i = 0; i < ejercicios.length; i++) {
-      const e = ejercicios[i];
-      if (!e.nombre.trim()) {
-        Alert.alert("Error", `El ejercicio ${i + 1} debe tener un nombre.`);
-        return;
-      }
-      if (!e.peso || isNaN(Number(e.peso))) {
-        Alert.alert("Error", `El peso del ejercicio ${i + 1} no es válido.`);
-        return;
-      }
-      if (!e.repeticiones || isNaN(Number(e.repeticiones))) {
-        Alert.alert(
-          "Error",
-          `Las repeticiones del ejercicio ${i + 1} no son válidas.`
-        );
-        return;
-      }
-      if (!e.series || isNaN(Number(e.series))) {
-        Alert.alert(
-          "Error",
-          `Las series del ejercicio ${i + 1} no son válidas.`
-        );
-        return;
-      }
-    }
-
-    try {
-      const ejerciciosParseados = ejercicios.map((e) => ({
-        nombre: e.nombre.trim(),
-        peso: Number(e.peso),
-        repeticiones: Number(e.repeticiones),
-        series: Number(e.series),
-      }));
-
-      const res = await fetch(
-        `http://192.168.1.128:3000/api/rutina/${encodeURIComponent(id)}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            nombre: nombre.trim(),
-            descripcion: descripcion.trim(),
-            ejercicios: ejerciciosParseados,
-          }),
-        }
-      );
-
-      if (!res.ok) throw new Error("Error guardando rutina");
-
-      Alert.alert("Éxito", "Rutina actualizada");
-      router.back();
-    } catch (error) {
-      console.error("Error guardando rutina:", error);
-      Alert.alert("Error", "No se pudo guardar la rutina");
-    }
-  };
-
-  if (loading) return <Text style={{ padding: 16 }}>Cargando...</Text>;
+  if (!rutina) {
+    return (
+      <View style={styles.center}>
+        <Text>Rutina no encontrada</Text>
+      </View>
+    );
+  }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.label}>Nombre</Text>
-      <TextInput style={styles.input} value={nombre} onChangeText={setNombre} />
+      <TextInput
+        style={styles.input}
+        value={nombre}
+        onChangeText={setNombre}
+        placeholder="Nombre de la rutina"
+      />
 
-      <Text style={styles.label}>Descripción (opcional)</Text>
+      <Text style={styles.label}>Descripción</Text>
       <TextInput
         style={styles.input}
         value={descripcion}
         onChangeText={setDescripcion}
-        multiline
+        placeholder="Descripción de la rutina"
       />
 
-      {ejercicios.map((ejercicio, index) => (
+      <Text style={styles.label}>Ejercicios</Text>
+      {ejercicios.map((ej, index) => (
         <View key={index} style={styles.ejercicioContainer}>
-          <Text style={styles.ejercicioTitulo}>Ejercicio {index + 1}</Text>
-
           <TextInput
             style={styles.input}
-            placeholder="Nombre"
-            value={ejercicio.nombre}
+            value={ej.nombre}
             onChangeText={(text) => actualizarEjercicio(index, "nombre", text)}
+            placeholder="Nombre del ejercicio"
           />
           <TextInput
             style={styles.input}
-            placeholder="Peso (kg)"
-            keyboardType="numeric"
-            value={ejercicio.peso}
+            value={ej.peso.toString()}
             onChangeText={(text) => actualizarEjercicio(index, "peso", text)}
+            placeholder="Peso"
+            keyboardType="numeric"
           />
           <TextInput
             style={styles.input}
-            placeholder="Repeticiones"
-            keyboardType="numeric"
-            value={ejercicio.repeticiones}
+            value={ej.repeticiones.toString()}
             onChangeText={(text) =>
               actualizarEjercicio(index, "repeticiones", text)
             }
+            placeholder="Repeticiones"
+            keyboardType="numeric"
           />
           <TextInput
             style={styles.input}
+            value={ej.series.toString()}
+            onChangeText={(text) => actualizarEjercicio(index, "series", text)}
             placeholder="Series"
             keyboardType="numeric"
-            value={ejercicio.series}
-            onChangeText={(text) => actualizarEjercicio(index, "series", text)}
           />
-
-          <Pressable
-            style={styles.btnEliminarEjercicio}
+          <Button
+            title="Eliminar ejercicio"
+            color="#dc3545"
             onPress={() => eliminarEjercicio(index)}
-          >
-            <Text style={styles.btnEliminarTexto}>Eliminar ejercicio</Text>
-          </Pressable>
+          />
         </View>
       ))}
 
-      <Pressable style={styles.btnAgregarEjercicio} onPress={agregarEjercicio}>
-        <Text style={styles.btnAgregarTexto}>+ Agregar ejercicio</Text>
-      </Pressable>
+      <Button title="Agregar ejercicio" onPress={agregarEjercicio} />
 
-      <Button title="Guardar" onPress={guardarCambios} />
+      <View style={{ marginTop: 20 }}>
+        <Button title="Guardar Cambios" onPress={guardarCambios} />
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 16 },
-  label: { fontWeight: "bold", marginTop: 12 },
+  container: {
+    padding: 16,
+    backgroundColor: "#fff",
+    flexGrow: 1,
+  },
+  label: {
+    fontWeight: "bold",
+    marginBottom: 6,
+    fontSize: 16,
+  },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
-    padding: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     borderRadius: 6,
-    marginTop: 4,
     marginBottom: 12,
   },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   ejercicioContainer: {
-    marginBottom: 24,
-    padding: 12,
-    backgroundColor: "#eee",
-    borderRadius: 8,
-  },
-  ejercicioTitulo: {
-    fontWeight: "bold",
-    fontSize: 16,
-    marginBottom: 8,
-  },
-  btnEliminarEjercicio: {
-    backgroundColor: "#F44336",
-    padding: 8,
+    borderWidth: 1,
+    borderColor: "#ccc",
     borderRadius: 6,
-    alignItems: "center",
-  },
-  btnEliminarTexto: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  btnAgregarEjercicio: {
-    backgroundColor: "#2196F3",
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 20,
-    alignItems: "center",
-  },
-  btnAgregarTexto: {
-    color: "#fff",
-    fontWeight: "bold",
+    padding: 10,
+    marginBottom: 12,
+    backgroundColor: "#f9f9f9",
   },
 });
