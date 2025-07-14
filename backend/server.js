@@ -13,8 +13,6 @@ const PESO_PATH = path.join(__dirname, "peso.txt");
 const PROGRESO_PATH = path.join(__dirname, "progreso.txt");
 const RUTINAS_PATH = path.join(__dirname, "rutinas.txt");
 
-buscarRutinaPorId("7146737118");
-
 app.post("/api/rutinas", (req, res) => {
   const { ID, username, nombre, descripcion, ejercicios } = req.body;
 
@@ -53,6 +51,8 @@ app.post("/api/rutinas", (req, res) => {
 // Obtener todas las rutinas de un usuario
 app.get("/api/rutinas/:username", (req, res) => {
   const { username } = req.params;
+  console.log("Buscando rutinas para:", username);
+
   fs.readFile(RUTINAS_PATH, "utf8", (err, data) => {
     if (err) {
       console.error("Error leyendo archivo:", err);
@@ -60,6 +60,8 @@ app.get("/api/rutinas/:username", (req, res) => {
     }
 
     const lineas = data.split("\n").filter(Boolean);
+    console.log("Líneas encontradas:", lineas.length);
+
     const rutinas = lineas
       .map((line) => {
         const [ID, user, nombre, descripcion, ejerciciosJSON] = line.split("|");
@@ -77,6 +79,8 @@ app.get("/api/rutinas/:username", (req, res) => {
         }
       })
       .filter((r) => r && r.username === username);
+
+    console.log(`Rutinas encontradas para ${username}:`, rutinas.length);
     res.json(rutinas);
   });
 });
@@ -86,24 +90,27 @@ app.get("/api/rutina/:id", (req, res) => {
 
   fs.readFile(RUTINAS_PATH, "utf8", (err, data) => {
     if (err) {
-      console.error("❌ Error leyendo archivo:", err);
       return res.status(500).json({ message: "Error leyendo archivo" });
     }
 
     const lineas = data.split("\n").filter(Boolean);
-
-    for (const linea of lineas) {
+    for (let line of lineas) {
       const [ID, username, nombre, descripcion, ejerciciosJSON] =
-        linea.split("|");
+        line.split("|");
       if (ID === id) {
         try {
-          const ejercicios = JSON.parse(ejerciciosJSON);
-          return res.json({ ID, username, nombre, descripcion, ejercicios });
+          const rutina = {
+            ID,
+            username,
+            nombre,
+            descripcion,
+            ejercicios: JSON.parse(ejerciciosJSON),
+          };
+          return res.json(rutina);
         } catch (e) {
-          console.error("❌ Error parseando ejercicios JSON:", e);
           return res
             .status(500)
-            .json({ message: "Error al parsear ejercicios" });
+            .json({ message: "Error parseando ejercicios" });
         }
       }
     }

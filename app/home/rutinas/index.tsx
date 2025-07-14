@@ -121,18 +121,30 @@ export default function ListaRutinas() {
     router.push("/home/rutinas/nueva");
   };
 
+  // Nueva función para ver progreso
+  const verProgreso = (id: string) => {
+    router.push(`/home/rutinas/progreso?id=${id}`);
+  };
+
   const renderItem = ({ item }: { item: Rutina }) => (
     <View style={styles.itemContainer}>
-      <View style={{ flex: 1 }}>
+      {/* Touchable para toda la tarjeta excepto botones */}
+      <TouchableOpacity
+        style={{ flex: 1 }}
+        onPress={() => verProgreso(item.ID)}
+        activeOpacity={0.7}
+      >
         <Text style={styles.nombre}>{item.nombre}</Text>
         <Text style={styles.descripcion}>{item.descripcion}</Text>
-      </View>
+      </TouchableOpacity>
+
       <TouchableOpacity
         style={styles.btnEditar}
         onPress={() => editarRutina(item.ID)}
       >
         <Text style={{ color: "white" }}>Editar</Text>
       </TouchableOpacity>
+
       <TouchableOpacity
         style={styles.btnEliminar}
         onPress={() => eliminarRutina(item.ID)}
