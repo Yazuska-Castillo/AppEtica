@@ -1,0 +1,11 @@
+bajar de peso|carbohidratos|Avena|1/2 taza|40|150
+bajar de peso|proteinas|Pechuga de pollo|100g|100|165
+bajar de peso|grasas saludables|Palta|1/4 unidad|50|80
+
+ganar masa muscular|carbohidratos|Arroz integral|1 taza|150|210
+ganar masa muscular|proteinas|Carne magra|150g|150|200
+ganar masa muscular|grasas saludables|Frutos secos|30g|30|180
+
+tonificar|carbohidratos|Quinoa|1/2 taza|70|160
+tonificar|proteinas|Huevo entero|2 unidades|100|140
+tonificar|grasas saludables|Aceite de oliva|1 cucharada|10|90

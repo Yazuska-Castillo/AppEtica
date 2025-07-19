@@ -9,9 +9,66 @@ app.use(express.json());
 
 const USUARIOS_PATH = path.join(__dirname, "usuarios.txt");
 const CONFIG_PATH = path.join(__dirname, "configuracion.txt");
-const PESO_PATH = path.join(__dirname, "peso.txt");
-const PROGRESO_PATH = path.join(__dirname, "progreso.txt");
 const RUTINAS_PATH = path.join(__dirname, "rutinas.txt");
+const ALIMENTACION_PATH = path.join(__dirname, "alimentacion.txt");
+
+// --- RUTAS ALIMENTACION ---
+
+app.get("/api/alimentacion/:objetivo", (req, res) => {
+  const { objetivo } = req.params;
+  console.log("Objetivo recibido:", objetivo);
+
+  fs.readFile(ALIMENTACION_PATH, "utf8", (err, data) => {
+    if (err) {
+      console.error("Error leyendo archivo alimentacion.txt:", err);
+      return res
+        .status(500)
+        .json({ message: "Error leyendo recomendaciones." });
+    }
+
+    const lineas = data.split("\n").filter(Boolean);
+    console.log("Total de líneas leídas:", lineas.length);
+
+    // Filtrar líneas donde el objetivo (antes del primer '|') coincide ignorando mayúsculas y espacios extra
+    const filtradas = lineas.filter((line) => {
+      const objLinea = line.split("|")[0].trim().toLowerCase();
+      const coincide = objLinea === objetivo.trim().toLowerCase();
+      if (coincide) {
+        console.log("Línea coincidente:", line);
+      }
+      return coincide;
+    });
+
+    console.log("Total de recomendaciones encontradas:", filtradas.length);
+
+    const recomendaciones = filtradas.map((line) => {
+      const [obj, categoria, alimento, porcion, gramos, calorias] =
+        line.split("|");
+      return {
+        objetivo: obj,
+        categoria,
+        alimento,
+        porcion,
+        gramos: Number(gramos),
+        calorias: Number(calorias),
+      };
+    });
+
+    if (recomendaciones.length === 0) {
+      console.warn(
+        `No se encontraron recomendaciones para el objetivo '${objetivo}'.`
+      );
+      return res.status(404).json({
+        message: `No hay recomendaciones para el objetivo '${objetivo}'.`,
+      });
+    }
+
+    console.log("Recomendaciones a enviar:", recomendaciones);
+    res.json(recomendaciones);
+  });
+});
+
+// --- RUTAS RUTINAS ---
 
 app.post("/api/rutinas", (req, res) => {
   const { ID, username, nombre, descripcion, ejercicios } = req.body;
@@ -48,11 +105,8 @@ app.post("/api/rutinas", (req, res) => {
   });
 });
 
-// Obtener todas las rutinas de un usuario
 app.get("/api/rutinas/:username", (req, res) => {
   const { username } = req.params;
-  console.log("Buscando rutinas para:", username);
-
   fs.readFile(RUTINAS_PATH, "utf8", (err, data) => {
     if (err) {
       console.error("Error leyendo archivo:", err);
@@ -60,7 +114,6 @@ app.get("/api/rutinas/:username", (req, res) => {
     }
 
     const lineas = data.split("\n").filter(Boolean);
-    console.log("Líneas encontradas:", lineas.length);
 
     const rutinas = lineas
       .map((line) => {
@@ -80,7 +133,6 @@ app.get("/api/rutinas/:username", (req, res) => {
       })
       .filter((r) => r && r.username === username);
 
-    console.log(`Rutinas encontradas para ${username}:`, rutinas.length);
     res.json(rutinas);
   });
 });
@@ -119,7 +171,6 @@ app.get("/api/rutina/:id", (req, res) => {
   });
 });
 
-// Eliminar rutina por ID
 app.delete("/api/rutina/:id", (req, res) => {
   const { id } = req.params;
 
@@ -140,8 +191,6 @@ app.delete("/api/rutina/:id", (req, res) => {
       return res.status(404).json({ message: "Rutina no encontrada." });
     }
 
-    console.log("Nuevo contenido a escribir:", nuevasLineas);
-
     fs.writeFile(RUTINAS_PATH, nuevasLineas.join("\n") + "\n", (err) => {
       if (err) {
         console.error("Error escribiendo archivo:", err);
@@ -153,83 +202,8 @@ app.delete("/api/rutina/:id", (req, res) => {
   });
 });
 
-// Guardar peso
-app.post("/api/peso", (req, res) => {
-  const { username, fecha, peso } = req.body;
+// --- RUTAS REGISTRO ---
 
-  const pesoNum = parseFloat(peso);
-
-  if (!username || !fecha || isNaN(pesoNum) || pesoNum <= 0) {
-    return res.status(400).json({ message: "Peso inválido o faltan datos." });
-  }
-
-  const linea = `${username}|${fecha}|${pesoNum}\n`;
-
-  fs.appendFile(PESO_PATH, linea, (err) => {
-    if (err) {
-      console.error("❌ Error guardando peso:", err);
-      return res.status(500).json({ message: "Error guardando peso." });
-    }
-    console.log("✅ Peso guardado:", linea.trim());
-    res.json({ message: "Peso guardado correctamente." });
-  });
-});
-
-// Obtener pesos
-app.get("/api/peso/:username", (req, res) => {
-  const { username } = req.params;
-  fs.readFile(PESO_PATH, "utf8", (err, data) => {
-    if (err) return res.status(500).json({ message: "Error leyendo pesos." });
-    const lineas = data.split("\n").filter(Boolean);
-    const registros = lineas
-      .filter((line) => line.startsWith(username + "|"))
-      .map((line) => {
-        const [, fecha, peso] = line.split("|");
-        return { fecha, peso: parseFloat(peso) };
-      });
-    res.json(registros);
-  });
-});
-
-// Guardar progreso ejercicio
-app.post("/api/progreso", (req, res) => {
-  const { username, fecha, ejercicio, peso, repeticiones, series } = req.body;
-  if (!username || !fecha || !ejercicio || !peso || !repeticiones || !series) {
-    return res.status(400).json({ message: "Faltan datos para progreso." });
-  }
-  const linea = `${username}|${fecha}|${ejercicio}|${peso}|${repeticiones}|${series}\n`;
-  fs.appendFile(PROGRESO_PATH, linea, (err) => {
-    if (err)
-      return res.status(500).json({ message: "Error guardando progreso." });
-    res.json({ message: "Progreso guardado correctamente." });
-  });
-});
-
-// Obtener progreso ejercicio
-app.get("/api/progreso/:username", (req, res) => {
-  const { username } = req.params;
-  fs.readFile(PROGRESO_PATH, "utf8", (err, data) => {
-    if (err)
-      return res.status(500).json({ message: "Error leyendo progreso." });
-    const lineas = data.split("\n").filter(Boolean);
-    const registros = lineas
-      .filter((line) => line.startsWith(username + "|"))
-      .map((line) => {
-        const [, fecha, ejercicio, peso, repeticiones, series] =
-          line.split("|");
-        return {
-          fecha,
-          ejercicio,
-          peso: parseFloat(peso),
-          repeticiones: parseInt(repeticiones),
-          series: parseInt(series),
-        };
-      });
-    res.json(registros);
-  });
-});
-
-// Registro usuario
 app.post("/api/register", (req, res) => {
   const { username, email, password } = req.body;
 
@@ -262,7 +236,8 @@ app.post("/api/register", (req, res) => {
   });
 });
 
-// Login usuario
+// --- RUTAS LOGIN ---
+
 app.post("/api/login", (req, res) => {
   const { email, password } = req.body;
 
@@ -294,7 +269,8 @@ app.post("/api/login", (req, res) => {
   });
 });
 
-// Guardar o actualizar configuración del usuario
+// --- RUTAS CONFIGURACION ---
+
 app.post("/api/configuracion", (req, res) => {
   const { username, objetivo, edad, sexo, altura, peso, experiencia } =
     req.body;
@@ -340,7 +316,6 @@ app.post("/api/configuracion", (req, res) => {
   });
 });
 
-// Obtener configuración de un usuario (por username)
 app.get("/api/configuracion/:username", (req, res) => {
   const { username } = req.params;
 

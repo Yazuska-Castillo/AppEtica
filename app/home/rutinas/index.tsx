@@ -15,6 +15,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  useColorScheme,
 } from "react-native";
 
 type Ejercicio = {
@@ -33,6 +34,9 @@ type Rutina = {
 };
 
 export default function ListaRutinas() {
+  const colorScheme = useColorScheme();
+  const styles = getStyles(colorScheme === "dark" ? "dark" : "light");
+
   const router = useRouter();
   const [rutinas, setRutinas] = useState<Rutina[]>([]);
   const [loading, setLoading] = useState(false);
@@ -40,7 +44,7 @@ export default function ListaRutinas() {
   const navigation = useNavigation();
 
   useLayoutEffect(() => {
-    navigation.setOptions({ headerShown: false });
+    navigation.setOptions({ headerShown: true });
   }, [navigation]);
 
   const cargarUsuario = async () => {
@@ -121,14 +125,12 @@ export default function ListaRutinas() {
     router.push("/home/rutinas/nueva");
   };
 
-  // Nueva función para ver progreso
   const verProgreso = (id: string) => {
     router.push(`/home/rutinas/progreso?id=${id}`);
   };
 
   const renderItem = ({ item }: { item: Rutina }) => (
     <View style={styles.itemContainer}>
-      {/* Touchable para toda la tarjeta excepto botones */}
       <TouchableOpacity
         style={{ flex: 1 }}
         onPress={() => verProgreso(item.ID)}
@@ -142,14 +144,14 @@ export default function ListaRutinas() {
         style={styles.btnEditar}
         onPress={() => editarRutina(item.ID)}
       >
-        <Text style={{ color: "white" }}>Editar</Text>
+        <Text style={styles.btnText}>Editar</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.btnEliminar}
         onPress={() => eliminarRutina(item.ID)}
       >
-        <Text style={{ color: "white" }}>Eliminar</Text>
+        <Text style={styles.btnText}>Eliminar</Text>
       </TouchableOpacity>
     </View>
   );
@@ -160,9 +162,7 @@ export default function ListaRutinas() {
       {loading ? (
         <ActivityIndicator size="large" color="#0066cc" />
       ) : rutinas.length === 0 ? (
-        <Text style={{ textAlign: "center", marginTop: 20 }}>
-          No hay rutinas aún
-        </Text>
+        <Text style={styles.noRutinas}>No hay rutinas aún</Text>
       ) : (
         <FlatList
           data={rutinas}
@@ -179,47 +179,72 @@ export default function ListaRutinas() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: "#fff" },
-  titulo: { fontSize: 24, fontWeight: "bold", marginBottom: 16 },
-  itemContainer: {
-    flexDirection: "row",
-    padding: 12,
-    backgroundColor: "#eee",
-    borderRadius: 8,
-    marginBottom: 12,
-    alignItems: "center",
-  },
-  nombre: { fontSize: 18, fontWeight: "bold" },
-  descripcion: { fontSize: 14, color: "#555" },
-  btnEditar: {
-    backgroundColor: "#007bff",
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-    marginHorizontal: 6,
-  },
-  btnEliminar: {
-    backgroundColor: "#dc3545",
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-  },
-  btnNueva: {
-    position: "absolute",
-    bottom: 24,
-    right: 24,
-    backgroundColor: "#28a745",
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 5,
-  },
-  btnNuevaTexto: {
-    color: "#fff",
-    fontSize: 32,
-    lineHeight: 32,
-  },
-});
+const getStyles = (theme: "light" | "dark") =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 16,
+      backgroundColor: theme === "dark" ? "#121212" : "#fff",
+    },
+    titulo: {
+      fontSize: 24,
+      fontWeight: "bold",
+      marginBottom: 16,
+      color: theme === "dark" ? "#fff" : "#000",
+    },
+    itemContainer: {
+      flexDirection: "row",
+      padding: 12,
+      backgroundColor: theme === "dark" ? "#1e1e1e" : "#eee",
+      borderRadius: 8,
+      marginBottom: 12,
+      alignItems: "center",
+    },
+    nombre: {
+      fontSize: 18,
+      fontWeight: "bold",
+      color: theme === "dark" ? "#fff" : "#000",
+    },
+    descripcion: {
+      fontSize: 14,
+      color: theme === "dark" ? "#ccc" : "#555",
+    },
+    btnEditar: {
+      backgroundColor: "#007bff",
+      paddingVertical: 6,
+      paddingHorizontal: 12,
+      borderRadius: 6,
+      marginHorizontal: 6,
+    },
+    btnEliminar: {
+      backgroundColor: "#dc3545",
+      paddingVertical: 6,
+      paddingHorizontal: 12,
+      borderRadius: 6,
+    },
+    btnText: {
+      color: "#fff",
+    },
+    noRutinas: {
+      textAlign: "center",
+      marginTop: 20,
+      color: theme === "dark" ? "#aaa" : "#000",
+    },
+    btnNueva: {
+      position: "absolute",
+      bottom: 24,
+      right: 24,
+      backgroundColor: "#28a745",
+      width: 56,
+      height: 56,
+      borderRadius: 28,
+      justifyContent: "center",
+      alignItems: "center",
+      elevation: 5,
+    },
+    btnNuevaTexto: {
+      color: "#fff",
+      fontSize: 32,
+      lineHeight: 32,
+    },
+  });

@@ -9,6 +9,7 @@ import {
   Text,
   TextInput,
   View,
+  useColorScheme,
 } from "react-native";
 
 type Ejercicio = {
@@ -20,20 +21,20 @@ type Ejercicio = {
 
 export default function NuevaRutina() {
   const router = useRouter();
+  const navigation = useNavigation();
+  const colorScheme = useColorScheme();
+  const styles = getStyles(colorScheme === "dark" ? "dark" : "light");
 
-  // Estado con un ejercicio inicial obligatorio
   const [ejercicios, setEjercicios] = useState<Ejercicio[]>([
     { nombre: "", peso: 0, repeticiones: 0, series: 0 },
   ]);
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
-  const navigation = useNavigation();
 
   useLayoutEffect(() => {
-    navigation.setOptions({ headerShown: false });
+    navigation.setOptions({ headerShown: true });
   }, [navigation]);
 
-  // Generar un ID único para la rutina
   const generarID = () => Math.floor(Date.now() * Math.random()).toString();
 
   const agregarEjercicio = () => {
@@ -73,7 +74,6 @@ export default function NuevaRutina() {
       return;
     }
 
-    // Validar que todos los ejercicios tengan nombre
     if (ejercicios.some((ej) => !ej.nombre.trim())) {
       Alert.alert("Error", "Todos los ejercicios deben tener un nombre");
       return;
@@ -104,7 +104,7 @@ export default function NuevaRutina() {
       if (!res.ok) throw new Error("Error guardando rutina");
 
       Alert.alert("Éxito", "Rutina creada correctamente");
-      router.push("/home/rutinas");
+      router.replace("/home/rutinas");
     } catch (error) {
       Alert.alert("Error", "No se pudo guardar la rutina");
       console.error(error);
@@ -119,6 +119,7 @@ export default function NuevaRutina() {
         value={nombre}
         onChangeText={setNombre}
         placeholder="Nombre de la rutina"
+        placeholderTextColor={colorScheme === "dark" ? "#aaa" : "#888"}
       />
 
       <Text style={styles.label}>Descripción</Text>
@@ -127,6 +128,7 @@ export default function NuevaRutina() {
         value={descripcion}
         onChangeText={setDescripcion}
         placeholder="Descripción de la rutina"
+        placeholderTextColor={colorScheme === "dark" ? "#aaa" : "#888"}
       />
 
       <Text style={styles.label}>Ejercicios</Text>
@@ -137,14 +139,20 @@ export default function NuevaRutina() {
             value={ej.nombre}
             onChangeText={(text) => actualizarEjercicio(index, "nombre", text)}
             placeholder="Nombre del ejercicio"
+            placeholderTextColor={colorScheme === "dark" ? "#aaa" : "#888"}
           />
+
+          <Text style={styles.labelPeque}>Peso (kg)</Text>
           <TextInput
             style={styles.input}
             value={ej.peso.toString()}
             onChangeText={(text) => actualizarEjercicio(index, "peso", text)}
             placeholder="Peso"
             keyboardType="numeric"
+            placeholderTextColor={colorScheme === "dark" ? "#aaa" : "#888"}
           />
+
+          <Text style={styles.labelPeque}>Repeticiones</Text>
           <TextInput
             style={styles.input}
             value={ej.repeticiones.toString()}
@@ -153,14 +161,19 @@ export default function NuevaRutina() {
             }
             placeholder="Repeticiones"
             keyboardType="numeric"
+            placeholderTextColor={colorScheme === "dark" ? "#aaa" : "#888"}
           />
+
+          <Text style={styles.labelPeque}>Series</Text>
           <TextInput
             style={styles.input}
             value={ej.series.toString()}
             onChangeText={(text) => actualizarEjercicio(index, "series", text)}
             placeholder="Series"
             keyboardType="numeric"
+            placeholderTextColor={colorScheme === "dark" ? "#aaa" : "#888"}
           />
+
           <Button
             title="Eliminar ejercicio"
             color="#dc3545"
@@ -178,31 +191,42 @@ export default function NuevaRutina() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-    backgroundColor: "#fff",
-    flexGrow: 1,
-  },
-  label: {
-    fontWeight: "bold",
-    marginBottom: 6,
-    fontSize: 16,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 6,
-    marginBottom: 12,
-  },
-  ejercicioContainer: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 6,
-    padding: 10,
-    marginBottom: 12,
-    backgroundColor: "#f9f9f9",
-  },
-});
+const getStyles = (theme: "light" | "dark") =>
+  StyleSheet.create({
+    container: {
+      padding: 16,
+      backgroundColor: theme === "dark" ? "#121212" : "#fff",
+      flexGrow: 1,
+    },
+    label: {
+      fontWeight: "bold",
+      marginBottom: 6,
+      fontSize: 16,
+      color: theme === "dark" ? "#fff" : "#000",
+    },
+    labelPeque: {
+      fontSize: 12,
+      color: theme === "dark" ? "#ccc" : "#555",
+      marginBottom: 4,
+      marginLeft: 4,
+      fontWeight: "600",
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: theme === "dark" ? "#555" : "#ccc",
+      backgroundColor: theme === "dark" ? "#1e1e1e" : "#fff",
+      color: theme === "dark" ? "#fff" : "#000",
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 6,
+      marginBottom: 12,
+    },
+    ejercicioContainer: {
+      borderWidth: 1,
+      borderColor: theme === "dark" ? "#555" : "#ccc",
+      borderRadius: 6,
+      padding: 10,
+      marginBottom: 12,
+      backgroundColor: theme === "dark" ? "#1e1e1e" : "#f9f9f9",
+    },
+  });

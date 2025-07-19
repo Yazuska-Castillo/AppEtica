@@ -2,21 +2,16 @@ import { Ionicons } from "@expo/vector-icons";
 import { Stack, useNavigation } from "expo-router";
 import { Pressable, useColorScheme } from "react-native";
 
-export default function RutinasLayout() {
+export default function AlimentacionLayout() {
   return (
     <Stack>
-      <Stack.Screen name="index" options={{ title: "Rutinas" }} />
+      <Stack.Screen name="index" options={{ title: "Alimentación" }} />
       <Stack.Screen
-        name="editar"
-        options={{ title: "Editar Rutina", headerLeft: () => <BackButton /> }}
-      />
-      <Stack.Screen
-        name="nueva"
-        options={{ title: "Agregar Rutina", headerLeft: () => <BackButton /> }}
-      />
-      <Stack.Screen
-        name="progreso"
-        options={{ title: "Progreso", headerLeft: () => <BackButton /> }}
+        name="completa"
+        options={{
+          title: "Premiun",
+          headerLeft: () => <BackButton />,
+        }}
       />
     </Stack>
   );

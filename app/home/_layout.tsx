@@ -5,20 +5,22 @@ export default function HomeLayout() {
   return (
     <Tabs>
       <Tabs.Screen
-        name="alimentacion"
+        name="rutinas"
         options={{
-          title: "Alimentación",
+          headerShown: false,
+          title: "Rutinas",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="fast-food" color={color} size={size} />
+            <Ionicons name="barbell" color={color} size={size} />
           ),
         }}
       />
       <Tabs.Screen
-        name="rutinas"
+        name="alimentacion"
         options={{
-          title: "Rutinas",
+          title: "Alimentación",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="barbell" color={color} size={size} />
+            <Ionicons name="fast-food" color={color} size={size} />
           ),
         }}
       />

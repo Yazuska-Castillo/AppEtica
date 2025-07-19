@@ -1,3 +1,5 @@
-Yazua|ganar masa muscular|20|femenino|160|10|principiante
-Hola|tonificar|38|masculino|1|1|principiante
-GenesisA|bajar de peso|28|femenino|175|200|principiante
+Yazua|tonificar|20|femenino|160|1|principiante
+Hola|ganar masa muscular|6494|masculino|4649|4949|principiante
+Adi|tonificar|21|masculino|174|85|intermedio
+Benjamin|tonificar|20|masculino|170|67|intermedio
+Usuario|bajar de peso|20|masculino|180|70|intermedio

@@ -8,6 +8,7 @@ import {
   Text,
   TextInput,
   View,
+  useColorScheme,
 } from "react-native";
 
 type Ejercicio = {
@@ -30,6 +31,9 @@ export default function EditarRutina() {
   const navigation = useNavigation();
   const { id } = useLocalSearchParams();
 
+  const colorScheme = useColorScheme();
+  const styles = getStyles(colorScheme === "dark" ? "dark" : "light");
+
   const [rutina, setRutina] = useState<Rutina | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -43,7 +47,6 @@ export default function EditarRutina() {
 
   useEffect(() => {
     if (!id || typeof id !== "string") {
-      console.log("[EditarRutina] ID inválido:", id);
       Alert.alert("Error", "ID de rutina no válido.");
       router.back();
       return;
@@ -51,13 +54,10 @@ export default function EditarRutina() {
 
     const cargarRutina = async () => {
       try {
-        console.log("[EditarRutina] Cargando rutina con ID:", id);
         setLoading(true);
         const res = await fetch(`http://192.168.1.128:3000/api/rutina/${id}`);
-        console.log("[EditarRutina] Respuesta fetch:", res.status);
         if (!res.ok) throw new Error("No se pudo cargar la rutina");
         const data: Rutina = await res.json();
-        console.log("[EditarRutina] Datos recibidos:", data);
 
         setRutina(data);
         setNombre(data.nombre);
@@ -69,7 +69,6 @@ export default function EditarRutina() {
         router.back();
       } finally {
         setLoading(false);
-        console.log("[EditarRutina] Loading finalizado");
       }
     };
 
@@ -96,15 +95,12 @@ export default function EditarRutina() {
         descripcion,
         ejercicios,
       };
-      console.log("[EditarRutina] Enviando datos para guardar:", body);
 
       const res = await fetch("http://192.168.1.128:3000/api/rutinas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-
-      console.log("[EditarRutina] Respuesta guardar:", res.status);
 
       if (!res.ok) throw new Error("Error al guardar rutina");
 
@@ -146,7 +142,7 @@ export default function EditarRutina() {
   if (loading) {
     return (
       <View style={styles.center}>
-        <Text>Cargando rutina...</Text>
+        <Text style={styles.label}>Cargando rutina...</Text>
       </View>
     );
   }
@@ -154,7 +150,7 @@ export default function EditarRutina() {
   if (!rutina) {
     return (
       <View style={styles.center}>
-        <Text>Rutina no encontrada</Text>
+        <Text style={styles.label}>Rutina no encontrada</Text>
       </View>
     );
   }
@@ -167,6 +163,7 @@ export default function EditarRutina() {
         value={nombre}
         onChangeText={setNombre}
         placeholder="Nombre de la rutina"
+        placeholderTextColor={colorScheme === "dark" ? "#aaa" : "#888"}
       />
 
       <Text style={styles.label}>Descripción</Text>
@@ -175,6 +172,7 @@ export default function EditarRutina() {
         value={descripcion}
         onChangeText={setDescripcion}
         placeholder="Descripción de la rutina"
+        placeholderTextColor={colorScheme === "dark" ? "#aaa" : "#888"}
       />
 
       <Text style={styles.label}>Ejercicios</Text>
@@ -185,14 +183,20 @@ export default function EditarRutina() {
             value={ej.nombre}
             onChangeText={(text) => actualizarEjercicio(index, "nombre", text)}
             placeholder="Nombre del ejercicio"
+            placeholderTextColor={colorScheme === "dark" ? "#aaa" : "#888"}
           />
+
+          <Text style={styles.labelPeque}>Peso (kg)</Text>
           <TextInput
             style={styles.input}
             value={ej.peso.toString()}
             onChangeText={(text) => actualizarEjercicio(index, "peso", text)}
             placeholder="Peso"
             keyboardType="numeric"
+            placeholderTextColor={colorScheme === "dark" ? "#aaa" : "#888"}
           />
+
+          <Text style={styles.labelPeque}>Repeticiones</Text>
           <TextInput
             style={styles.input}
             value={ej.repeticiones.toString()}
@@ -201,14 +205,19 @@ export default function EditarRutina() {
             }
             placeholder="Repeticiones"
             keyboardType="numeric"
+            placeholderTextColor={colorScheme === "dark" ? "#aaa" : "#888"}
           />
+
+          <Text style={styles.labelPeque}>Series</Text>
           <TextInput
             style={styles.input}
             value={ej.series.toString()}
             onChangeText={(text) => actualizarEjercicio(index, "series", text)}
             placeholder="Series"
             keyboardType="numeric"
+            placeholderTextColor={colorScheme === "dark" ? "#aaa" : "#888"}
           />
+
           <Button
             title="Eliminar ejercicio"
             color="#dc3545"
@@ -226,36 +235,48 @@ export default function EditarRutina() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-    backgroundColor: "#fff",
-    flexGrow: 1,
-  },
-  label: {
-    fontWeight: "bold",
-    marginBottom: 6,
-    fontSize: 16,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 6,
-    marginBottom: 12,
-  },
-  center: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  ejercicioContainer: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 6,
-    padding: 10,
-    marginBottom: 12,
-    backgroundColor: "#f9f9f9",
-  },
-});
+const getStyles = (theme: "light" | "dark") =>
+  StyleSheet.create({
+    container: {
+      padding: 16,
+      backgroundColor: theme === "dark" ? "#121212" : "#fff",
+      flexGrow: 1,
+    },
+    label: {
+      fontWeight: "bold",
+      marginBottom: 6,
+      fontSize: 16,
+      color: theme === "dark" ? "#fff" : "#000",
+    },
+    labelPeque: {
+      fontSize: 12,
+      color: theme === "dark" ? "#ccc" : "#555",
+      marginBottom: 4,
+      marginLeft: 4,
+      fontWeight: "600",
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: theme === "dark" ? "#555" : "#ccc",
+      backgroundColor: theme === "dark" ? "#1e1e1e" : "#fff",
+      color: theme === "dark" ? "#fff" : "#000",
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 6,
+      marginBottom: 12,
+    },
+    center: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: theme === "dark" ? "#121212" : "#fff",
+    },
+    ejercicioContainer: {
+      borderWidth: 1,
+      borderColor: theme === "dark" ? "#555" : "#ccc",
+      borderRadius: 6,
+      padding: 10,
+      marginBottom: 12,
+      backgroundColor: theme === "dark" ? "#1e1e1e" : "#f9f9f9",
+    },
+  });

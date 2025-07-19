@@ -36,7 +36,6 @@ export default function LoginScreen() {
         return res.json();
       })
       .then(async (data) => {
-        // Guardar usuario completo (puede incluir name, email, etc)
         await AsyncStorage.setItem("user", JSON.stringify(data.user));
 
         Alert.alert("Bienvenido", `Hola ${data.user.name}`);
@@ -50,7 +49,7 @@ export default function LoginScreen() {
 
         if (configResponse.ok) {
           // Si tiene configuración, va a alimentación
-          router.replace("/home/alimentacion");
+          router.replace("/home/rutinas");
         } else {
           // Si no, va a pantalla de configuración
           router.replace("/configuracion");
