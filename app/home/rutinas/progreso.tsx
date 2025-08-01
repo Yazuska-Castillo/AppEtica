@@ -20,7 +20,7 @@ type Ejercicio = {
 
 type Rutina = {
   ID: string;
-  username: string;
+  userId: string;
   nombre: string;
   descripcion: string;
   ejercicios: Ejercicio[];

@@ -1,4 +1,1 @@
-
-450549854555|Martin|Pierna|Pierna|[{"nombre":"Sentadilla","peso":200,"repeticiones":10,"series":2}]
-1530316550096|Benjamin|Pecho|Pecho|[{"nombre":"Press banca","peso":60,"repeticiones":4,"series":3}]
-81941916890|Usuario|Usuario|*Inserte descripción|[{"nombre":"Sentadilla","peso":90,"repeticiones":10,"series":5},{"nombre":"Peso Muerto","peso":100,"repeticiones":10,"series":3}]
+1688747778983|ea23b770-e8f3-49cb-9f7c-eefe9db39dc0|Hi|Como|[{"nombre":"Gy","peso":0,"repeticiones":0,"series":0}]

@@ -20,7 +20,7 @@ type Ejercicio = {
 
 type Rutina = {
   ID: string;
-  username: string;
+  userId: string;
   nombre: string;
   descripcion: string;
   ejercicios: Ejercicio[];
@@ -90,7 +90,7 @@ export default function EditarRutina() {
     try {
       const body: Rutina = {
         ID: rutina.ID,
-        username: rutina.username,
+        userId: rutina.userId, // Cambiado de username a userId
         nombre,
         descripcion,
         ejercicios,

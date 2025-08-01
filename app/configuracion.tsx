@@ -21,10 +21,15 @@ export default function Configuracion() {
   const darkMode = colorScheme === "dark";
   const styles = getStyles(darkMode);
 
-  const [username, setUsername] = useState<string | null>(null);
+  // Ahora guardamos el user completo (objeto con id, name, email)
+  const [user, setUser] = useState<{
+    id: string;
+    name: string;
+    email: string;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Dropdown states
+  // Dropdown states (igual que antes)
   const [openObjetivo, setOpenObjetivo] = useState(false);
   const [objetivo, setObjetivo] = useState("ganar masa muscular");
   const objetivos = [
@@ -67,7 +72,6 @@ export default function Configuracion() {
     setOpenSexo(false);
   };
 
-  // Cargar username y configuración guardada
   useEffect(() => {
     AsyncStorage.getItem("user")
       .then((json) => {
@@ -79,22 +83,20 @@ export default function Configuracion() {
           router.replace("/login");
           return;
         }
-        const user = JSON.parse(json);
-        const name = user.name || user.email || null;
-        if (!name) {
+        const userObj = JSON.parse(json);
+        if (!userObj || !userObj.id) {
           Alert.alert(
             "Error",
-            "No se pudo obtener el nombre de usuario. Por favor inicia sesión de nuevo."
+            "No se pudo obtener la información del usuario. Por favor inicia sesión de nuevo."
           );
           router.replace("/login");
           return;
         }
-        setUsername(name);
+        setUser(userObj);
 
-        // Luego obtener configuración
         fetch(
           `http://192.168.1.128:3000/api/configuracion/${encodeURIComponent(
-            name
+            userObj.id
           )}`
         )
           .then(async (res) => {
@@ -107,7 +109,6 @@ export default function Configuracion() {
               setPeso(data.peso || "");
               setExperiencia(data.experiencia || "principiante");
             }
-            // Si no existe config (404), mantenemos valores por defecto
           })
           .catch((err) => {
             console.error("Error cargando configuración:", err);
@@ -131,10 +132,10 @@ export default function Configuracion() {
       return;
     }
 
-    if (!username) {
+    if (!user) {
       Alert.alert(
         "Error",
-        "No se pudo obtener el nombre de usuario. Por favor inicia sesión de nuevo."
+        "No se pudo obtener la información del usuario. Por favor inicia sesión de nuevo."
       );
       router.replace("/login");
       return;
@@ -147,7 +148,7 @@ export default function Configuracion() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            username,
+            userId: user.id,
             objetivo,
             edad,
             sexo,

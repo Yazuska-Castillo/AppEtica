@@ -36,14 +36,15 @@ export default function LoginScreen() {
         return res.json();
       })
       .then(async (data) => {
+        // Guardar el objeto user completo (contiene id y name)
         await AsyncStorage.setItem("user", JSON.stringify(data.user));
 
         Alert.alert("Bienvenido", `Hola ${data.user.name}`);
 
-        // Comprobar si tiene configuración guardada
+        // Pedir configuración usando el id del usuario
         const configResponse = await fetch(
           `http://192.168.1.128:3000/api/configuracion/${encodeURIComponent(
-            data.user.name
+            data.user.id
           )}`
         );
 

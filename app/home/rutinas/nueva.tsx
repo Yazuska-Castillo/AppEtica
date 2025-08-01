@@ -30,10 +30,26 @@ export default function NuevaRutina() {
   ]);
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
+  const [userId, setUserId] = useState<string | null>(null); // <-- aquí el userId
 
   useLayoutEffect(() => {
     navigation.setOptions({ headerShown: true });
   }, [navigation]);
+
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const userString = await AsyncStorage.getItem("user");
+        if (userString) {
+          const user = JSON.parse(userString);
+          const userId = user.id;
+          setUserId(userId || null);
+        }
+      } catch (e) {
+        console.error("Error cargando userId:", e);
+      }
+    })();
+  }, []);
 
   const generarID = () => Math.floor(Date.now() * Math.random()).toString();
 
@@ -79,17 +95,15 @@ export default function NuevaRutina() {
       return;
     }
 
-    try {
-      const userString = await AsyncStorage.getItem("user");
-      let username = "desconocido";
-      if (userString) {
-        const user = JSON.parse(userString);
-        username = user.name || user.username || "desconocido";
-      }
+    if (!userId) {
+      Alert.alert("Error", "No se encontró usuario autenticado");
+      return;
+    }
 
+    try {
       const nuevaRutina = {
         ID: generarID(),
-        username,
+        userId, // <-- aquí se envía userId en vez de username
         nombre,
         descripcion,
         ejercicios,

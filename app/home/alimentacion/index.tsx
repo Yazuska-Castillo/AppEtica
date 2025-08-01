@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -29,59 +29,54 @@ export default function Alimentacion() {
   const [recomendaciones, setRecomendaciones] = useState<Recomendacion[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchObjetivoYRecomendaciones = async () => {
-      try {
-        // Obtener usuario almacenado
-        const storedUser = await AsyncStorage.getItem("user");
-        console.log("Usuario almacenado:", storedUser);
-        if (!storedUser) throw new Error("Usuario no autenticado");
+  useFocusEffect(
+    useCallback(() => {
+      const fetchDatos = async () => {
+        setLoading(true);
+        try {
+          const storedUser = await AsyncStorage.getItem("user");
+          if (!storedUser) {
+            Alert.alert("Error", "Usuario no autenticado.");
+            router.replace("/login");
+            return;
+          }
+          const user = JSON.parse(storedUser);
+          const userId = user.id;
 
-        const { name } = JSON.parse(storedUser);
-        console.log("Nombre de usuario extraído:", name);
+          const resConfig = await fetch(
+            `http://192.168.1.128:3000/api/configuracion/${encodeURIComponent(
+              userId
+            )}`
+          );
+          if (!resConfig.ok)
+            throw new Error("No se pudo obtener la configuración");
 
-        // Traer configuración para obtener objetivo
-        const resConfig = await fetch(
-          `http://192.168.1.128:3000/api/configuracion/${name}`
-        );
-        console.log("Respuesta config status:", resConfig.status);
-        if (!resConfig.ok) throw new Error("Error al obtener configuración");
+          const configData = await resConfig.json();
+          setObjetivo(configData.objetivo);
 
-        const configData = await resConfig.json();
-        console.log("Datos configuración recibidos:", configData);
-        console.log(
-          "Objetivo para buscar recomendaciones:",
-          configData.objetivo
-        ); // <- ESTA LÍNEA NUEVA
-        setObjetivo(configData.objetivo);
+          const resAlim = await fetch(
+            `http://192.168.1.128:3000/api/alimentacion/${encodeURIComponent(
+              configData.objetivo
+            )}`
+          );
+          if (!resAlim.ok)
+            throw new Error("No hay recomendaciones para este objetivo");
 
-        setObjetivo(configData.objetivo);
+          const alimData: Recomendacion[] = await resAlim.json();
+          setRecomendaciones(alimData);
+        } catch (error: any) {
+          console.error("Error en fetchDatos:", error.message);
+          Alert.alert("Error", error.message || "Error al cargar datos.");
+          setRecomendaciones([]);
+          setObjetivo(null);
+        } finally {
+          setLoading(false);
+        }
+      };
 
-        // Traer recomendaciones alimentación según objetivo
-        const resAlim = await fetch(
-          `http://192.168.1.128:3000/api/alimentacion/${encodeURIComponent(
-            configData.objetivo
-          )}`
-        );
-        console.log("Respuesta alimentación status:", resAlim.status);
-        if (!resAlim.ok)
-          throw new Error("No hay recomendaciones para este objetivo");
-
-        const alimData: Recomendacion[] = await resAlim.json();
-        console.log("Datos alimentación recibidos:", alimData);
-        setRecomendaciones(alimData);
-      } catch (error: any) {
-        console.log("Error en fetchObjetivoYRecomendaciones:", error.message);
-        Alert.alert("Error", error.message || "Error cargando datos");
-        setRecomendaciones([]);
-        setObjetivo(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchObjetivoYRecomendaciones();
-  }, []);
+      fetchDatos();
+    }, [router])
+  );
 
   const handleGoToFullTracking = () => {
     router.push("/home/alimentacion/completa");
@@ -109,7 +104,6 @@ export default function Alimentacion() {
     );
   }
 
-  // Agrupar recomendaciones por categoría para mostrar bien
   const categorias = [...new Set(recomendaciones.map((r) => r.categoria))];
 
   return (

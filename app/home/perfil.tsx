@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -14,6 +15,7 @@ import {
 } from "react-native";
 
 type ConfiguracionUsuario = {
+  userId: string;
   username: string;
   objetivo: string;
   edad: string;
@@ -32,37 +34,54 @@ export default function Perfil() {
   const [config, setConfig] = useState<ConfiguracionUsuario | null>(null);
   const [cargando, setCargando] = useState(true);
 
-  useEffect(() => {
-    const fetchConfig = async () => {
-      try {
-        const storedUser = await AsyncStorage.getItem("user");
-        if (!storedUser) {
-          Alert.alert("Error", "Usuario no autenticado.");
-          router.replace("/login");
-          return;
+  useFocusEffect(
+    useCallback(() => {
+      const fetchConfig = async () => {
+        try {
+          const storedUser = await AsyncStorage.getItem("user");
+          if (!storedUser) {
+            Alert.alert("Error", "Usuario no autenticado.");
+            router.replace("/login");
+            return;
+          }
+
+          const user = JSON.parse(storedUser);
+          const userId = user.id;
+          const username = user.name;
+
+          const res = await fetch(
+            `http://192.168.1.128:3000/api/configuracion/${encodeURIComponent(
+              userId
+            )}`
+          );
+          if (!res.ok) {
+            throw new Error("No se pudo obtener la configuración");
+          }
+
+          const data = await res.json();
+
+          // Aseguramos que el objeto tenga el username y userId para mostrar
+          setConfig({
+            userId,
+            username,
+            objetivo: data.objetivo,
+            edad: data.edad,
+            sexo: data.sexo,
+            altura: data.altura,
+            peso: data.peso,
+            experiencia: data.experiencia,
+          });
+        } catch (error) {
+          Alert.alert("Error", "Error al cargar los datos del perfil.");
+          console.error(error);
+        } finally {
+          setCargando(false);
         }
+      };
 
-        const { name } = JSON.parse(storedUser);
-
-        const res = await fetch(
-          `http://192.168.1.128:3000/api/configuracion/${name}`
-        );
-        if (!res.ok) {
-          throw new Error("No se pudo obtener la configuración");
-        }
-
-        const data = await res.json();
-        setConfig(data);
-      } catch (error) {
-        Alert.alert("Error", "Error al cargar los datos del perfil.");
-        console.error(error);
-      } finally {
-        setCargando(false);
-      }
-    };
-
-    fetchConfig();
-  }, []);
+      fetchConfig();
+    }, [])
+  );
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem("user");
@@ -95,13 +114,18 @@ export default function Perfil() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      {/* Encabezado con nombre + botón editar info personal */}
       <View style={styles.header}>
         <Text style={styles.title}>{config.username}</Text>
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-          <Text style={styles.logoutText}>Cerrar sesión</Text>
+        <TouchableOpacity
+          onPress={() => router.push("/EditarInformacionPersonal")}
+          style={styles.editButton}
+        >
+          <Text style={styles.editText}>✏️</Text>
         </TouchableOpacity>
       </View>
 
+      {/* Información del usuario */}
       <View style={styles.card}>
         <ProfileItem
           label="🎯 Objetivo"
@@ -131,12 +155,20 @@ export default function Perfil() {
         />
       </View>
 
+      {/* Botón para editar configuración */}
       <View style={{ marginTop: 30 }}>
         <Button
           title="Editar configuración"
           color="#4CAF50"
           onPress={() => router.push("/configuracion")}
         />
+      </View>
+
+      {/* Botón cerrar sesión abajo */}
+      <View style={styles.logoutContainer}>
+        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+          <Text style={styles.logoutText}>Cerrar sesión</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -195,15 +227,14 @@ const getStyles = (colorScheme: "light" | "dark" | null) =>
       fontWeight: "bold",
       color: colorScheme === "dark" ? "#fff" : "#000",
     },
-    logoutButton: {
-      backgroundColor: "#f44336",
-      paddingVertical: 6,
-      paddingHorizontal: 14,
+    editButton: {
+      backgroundColor: "#4CAF50",
+      padding: 8,
       borderRadius: 6,
     },
-    logoutText: {
+    editText: {
       color: "#fff",
-      fontWeight: "600",
+      fontSize: 16,
     },
     card: {
       backgroundColor: colorScheme === "dark" ? "#1e1e1e" : "#f5f5f5",
@@ -228,6 +259,22 @@ const getStyles = (colorScheme: "light" | "dark" | null) =>
     },
     itemValue: {
       color: colorScheme === "dark" ? "#fff" : "#000",
+      fontWeight: "600",
+      fontSize: 16,
+    },
+    logoutContainer: {
+      marginTop: 60,
+      alignItems: "center",
+    },
+    logoutButton: {
+      marginTop: 20,
+      backgroundColor: "#f44336",
+      paddingVertical: 10,
+      paddingHorizontal: 30,
+      borderRadius: 8,
+    },
+    logoutText: {
+      color: "#fff",
       fontWeight: "600",
       fontSize: 16,
     },
