@@ -23,7 +23,7 @@ export default function LoginScreen() {
       return;
     }
 
-    fetch("http://192.168.1.128:3000/api/login", {
+    fetch("http://192.168.1.139:3000/api/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -43,7 +43,7 @@ export default function LoginScreen() {
 
         // Pedir configuración usando el id del usuario
         const configResponse = await fetch(
-          `http://192.168.1.128:3000/api/configuracion/${encodeURIComponent(
+          `http://192.168.1.139:3000/api/configuracion/${encodeURIComponent(
             data.user.id
           )}`
         );

@@ -55,7 +55,7 @@ export default function EditarRutina() {
     const cargarRutina = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`http://192.168.1.128:3000/api/rutina/${id}`);
+        const res = await fetch(`http://192.168.1.139:3000/api/rutina/${id}`);
         if (!res.ok) throw new Error("No se pudo cargar la rutina");
         const data: Rutina = await res.json();
 
@@ -96,7 +96,7 @@ export default function EditarRutina() {
         ejercicios,
       };
 
-      const res = await fetch("http://192.168.1.128:3000/api/rutinas", {
+      const res = await fetch("http://192.168.1.139:3000/api/rutinas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

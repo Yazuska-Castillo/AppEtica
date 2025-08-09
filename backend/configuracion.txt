@@ -1,2 +1,4 @@
 Yazua|bajar de peso|20|femenino|160|1|intermedio
 ea23b770-e8f3-49cb-9f7c-eefe9db39dc0|ganar masa muscular|1|masculino|1|1|principiante
+0ec56153-cd43-423b-ab07-34853d87f207|tonificar|100|masculino|300|100|avanzado
+5017aaa7-a285-467f-84d3-099bdb2d1be7|ganar masa muscular|1|femenino|50|1000|avanzado

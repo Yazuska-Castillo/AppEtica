@@ -58,7 +58,7 @@ export default function ProgresoRutina() {
     async function cargarRutina() {
       try {
         setLoading(true);
-        const res = await fetch(`http://192.168.1.128:3000/api/rutina/${id}`);
+        const res = await fetch(`http://192.168.1.139:3000/api/rutina/${id}`);
         if (!res.ok) throw new Error("No se pudo cargar la rutina");
         const data: Rutina = await res.json();
         setRutina(data);

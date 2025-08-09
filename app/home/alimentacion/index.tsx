@@ -1,5 +1,4 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage"; // ✅ ESTA LÍNEA
 import { useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
 import {
@@ -12,6 +11,7 @@ import {
   useColorScheme,
   View,
 } from "react-native";
+
 
 type Recomendacion = {
   objetivo: string;
@@ -44,7 +44,7 @@ export default function Alimentacion() {
           const userId = user.id;
 
           const resConfig = await fetch(
-            `http://192.168.1.128:3000/api/configuracion/${encodeURIComponent(
+            `http://192.168.1.139:3000/api/configuracion/${encodeURIComponent(
               userId
             )}`
           );
@@ -55,7 +55,7 @@ export default function Alimentacion() {
           setObjetivo(configData.objetivo);
 
           const resAlim = await fetch(
-            `http://192.168.1.128:3000/api/alimentacion/${encodeURIComponent(
+            `http://192.168.1.139:3000/api/alimentacion/${encodeURIComponent(
               configData.objetivo
             )}`
           );
@@ -98,13 +98,18 @@ export default function Alimentacion() {
           No se encontraron recomendaciones para tu objetivo.
         </Text>
         <Pressable onPress={handleGoToFullTracking} style={styles.button}>
-          <Text style={styles.buttonText}>Ver registro completo</Text>
+          <Text style={styles.buttonText}>Consumo diario</Text>
         </Pressable>
       </View>
     );
   }
 
   const categorias = [...new Set(recomendaciones.map((r) => r.categoria))];
+
+  const totalPorCategoria = (categoria: string) =>
+    recomendaciones
+      .filter((r) => r.categoria === categoria)
+      .reduce((sum, r) => sum + r.gramos, 0);
 
   return (
     <ScrollView
@@ -123,11 +128,14 @@ export default function Alimentacion() {
           Plan alimentario recomendado
         </Text>
         <Pressable onPress={handleGoToFullTracking}>
-          <MaterialCommunityIcons
-            name="crown-outline"
-            size={24}
-            color={colorScheme === "dark" ? "#fff" : "#000"}
-          />
+          <Text
+            style={{
+              color: colorScheme === "dark" ? "#fff" : "#000",
+              fontWeight: "600",
+            }}
+          >
+            Consumo diario
+          </Text>
         </Pressable>
       </View>
 
@@ -149,7 +157,8 @@ export default function Alimentacion() {
               { color: colorScheme === "dark" ? "#fff" : "#000" },
             ]}
           >
-            {cat.charAt(0).toUpperCase() + cat.slice(1)}
+            {cat.charAt(0).toUpperCase() + cat.slice(1)}:{" "}
+            {totalPorCategoria(cat).toFixed(0)}g sugeridos
           </Text>
           {recomendaciones
             .filter((r) => r.categoria === cat)
@@ -174,9 +183,7 @@ export default function Alimentacion() {
           { color: colorScheme === "dark" ? "#ddd" : "#444" },
         ]}
       >
-        Mantente bien hidratado y trata de comer en horarios regulares. Si
-        necesitas más control nutricional, presiona la corona arriba a la
-        derecha para acceder al registro completo de alimentos.
+        Mantente bien hidratado y trata de comer en horarios regulares.
       </Text>
     </ScrollView>
   );
