@@ -347,7 +347,7 @@ export default function ListaRutinas() {
     };
 
     try {
-      const res = await fetch("http://192.168.1.139:3000/api/rutinas", {
+      const res = await fetch("http://192.168.1.128:3000/api/rutinas", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -392,7 +392,7 @@ export default function ListaRutinas() {
   const cargarRutinas = async (id: string) => {
     try {
       setLoading(true);
-      const res = await fetch(`http://192.168.1.139:3000/api/rutinas/${id}`); // usa userId en la url
+      const res = await fetch(`http://192.168.1.128:3000/api/rutinas/${id}`); // usa userId en la url
       if (!res.ok) throw new Error("Error cargando rutinas");
       const data: Rutina[] = await res.json();
       setRutinas(data);
@@ -425,7 +425,7 @@ export default function ListaRutinas() {
         onPress: async () => {
           try {
             const res = await fetch(
-              `http://192.168.1.139:3000/api/rutina/${id}`,
+              `http://192.168.1.128:3000/api/rutina/${id}`,
               {
                 method: "DELETE",
               }

@@ -56,7 +56,7 @@ export default function EditarInformacionPersonal() {
           setUserId(user.id); // Guardar userId para futuras peticiones
 
           const res = await fetch(
-            `http://192.168.1.139:3000/api/usuario/${encodeURIComponent(
+            `http://192.168.1.128:3000/api/usuario/${encodeURIComponent(
               user.id
             )}`
           );
@@ -100,7 +100,7 @@ export default function EditarInformacionPersonal() {
 
     try {
       const response = await fetch(
-        "http://192.168.1.139:3000/api/actualizar-usuario",
+        "http://192.168.1.128:3000/api/actualizar-usuario",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

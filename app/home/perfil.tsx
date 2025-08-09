@@ -50,7 +50,7 @@ export default function Perfil() {
           const username = user.name;
 
           const res = await fetch(
-            `http://192.168.1.139:3000/api/configuracion/${encodeURIComponent(
+            `http://192.168.1.128:3000/api/configuracion/${encodeURIComponent(
               userId
             )}`
           );

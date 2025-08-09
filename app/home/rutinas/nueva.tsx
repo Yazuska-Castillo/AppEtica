@@ -109,7 +109,7 @@ export default function NuevaRutina() {
         ejercicios,
       };
 
-      const res = await fetch("http://192.168.1.139:3000/api/rutinas", {
+      const res = await fetch("http://192.168.1.128:3000/api/rutinas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(nuevaRutina),

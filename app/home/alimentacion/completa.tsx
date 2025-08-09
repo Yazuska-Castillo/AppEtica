@@ -58,22 +58,22 @@ export default function SeleccionAlimentosFlexible() {
   }, [navigation]);
 
   const secciones: Seccion[] = ["Desayuno", "Almuerzo", "Merienda", "Cena"];
-  const [cantidades, setCantidades] = useState<Record<Seccion, Record<string, number>>>(
-    {
-      Desayuno: {},
-      Almuerzo: {},
-      Merienda: {},
-      Cena: {},
-    }
-  );
-  const [porcionesMap, setPorcionesMap] = useState<Record<Seccion, Record<string, number>>>(
-    {
-      Desayuno: {},
-      Almuerzo: {},
-      Merienda: {},
-      Cena: {},
-    }
-  );
+  const [cantidades, setCantidades] = useState<
+    Record<Seccion, Record<string, number>>
+  >({
+    Desayuno: {},
+    Almuerzo: {},
+    Merienda: {},
+    Cena: {},
+  });
+  const [porcionesMap, setPorcionesMap] = useState<
+    Record<Seccion, Record<string, number>>
+  >({
+    Desayuno: {},
+    Almuerzo: {},
+    Merienda: {},
+    Cena: {},
+  });
   const [abierto, setAbierto] = useState<Record<Seccion, boolean>>({
     Desayuno: false,
     Almuerzo: false,
@@ -81,7 +81,11 @@ export default function SeleccionAlimentosFlexible() {
     Cena: false,
   });
 
-  const modificarCantidad = (seccion: Seccion, nombre: string, delta: number) => {
+  const modificarCantidad = (
+    seccion: Seccion,
+    nombre: string,
+    delta: number
+  ) => {
     setCantidades((prev) => {
       const actual = prev[seccion][nombre] || 0;
       const nuevo = Math.max(0, actual + delta);
@@ -139,10 +143,16 @@ export default function SeleccionAlimentosFlexible() {
             const cantidad = cantidades[seccion][item.nombre] || 0;
             const porcion = porcionesMap[seccion][item.nombre] || 1;
             return (
-              <View style={[styles.card, cantidad > 0 ? styles.cardSeleccionado : null]}>
+              <View
+                style={[
+                  styles.card,
+                  cantidad > 0 ? styles.cardSeleccionado : null,
+                ]}
+              >
                 <Text style={styles.emoji}>{item.icono}</Text>
                 <Text style={styles.cardLabel}>
-                  {item.nombre} x{cantidad} ({cantidad * porcion * item.gramos}g)
+                  {item.nombre} x{cantidad} ({cantidad * porcion * item.gramos}
+                  g)
                 </Text>
                 <Pressable
                   onPress={() => cambiarPorcion(seccion, item.nombre)}
@@ -151,10 +161,16 @@ export default function SeleccionAlimentosFlexible() {
                   <Text style={styles.porcionText}>{porcion}x</Text>
                 </Pressable>
                 <View style={styles.botones}>
-                  <Pressable onPress={() => modificarCantidad(seccion, item.nombre, -1)} style={styles.btn}>
+                  <Pressable
+                    onPress={() => modificarCantidad(seccion, item.nombre, -1)}
+                    style={styles.btn}
+                  >
                     <Text style={styles.btnText}>-</Text>
                   </Pressable>
-                  <Pressable onPress={() => modificarCantidad(seccion, item.nombre, 1)} style={styles.btn}>
+                  <Pressable
+                    onPress={() => modificarCantidad(seccion, item.nombre, 1)}
+                    style={styles.btn}
+                  >
                     <Text style={styles.btnText}>+</Text>
                   </Pressable>
                 </View>
@@ -169,12 +185,17 @@ export default function SeleccionAlimentosFlexible() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.titulo}>Selecciona tus alimentos</Text>
-      <Text style={styles.calorias}>Calorías: {calorias.toFixed(0)} / {metaCalorias}</Text>
+      <Text style={styles.calorias}>
+        Calorías: {calorias.toFixed(0)} / {metaCalorias}
+      </Text>
       <View style={styles.progressBackground}>
         <View
           style={[
             styles.progressFill,
-            { width: `${Math.min((calorias / metaCalorias) * 100, 100)}%`, backgroundColor: "#007bff" },
+            {
+              width: `${Math.min((calorias / metaCalorias) * 100, 100)}%`,
+              backgroundColor: "#007bff",
+            },
           ]}
         />
       </View>
@@ -186,10 +207,19 @@ export default function SeleccionAlimentosFlexible() {
       {secciones.map((seccion) => (
         <View key={seccion} style={{ marginBottom: 20 }}>
           <Pressable
-            onPress={() => setAbierto((prev) => ({ ...prev, [seccion]: !prev[seccion] }))}
+            onPress={() =>
+              setAbierto((prev) => ({ ...prev, [seccion]: !prev[seccion] }))
+            }
             style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
           >
-            <Text style={[styles.grupoTitulo, { color: darkMode ? "#4CAF50" : "#2e7d32" }]}>{seccion}</Text>
+            <Text
+              style={[
+                styles.grupoTitulo,
+                { color: darkMode ? "#4CAF50" : "#2e7d32" },
+              ]}
+            >
+              {seccion}
+            </Text>
             <Text style={{ fontSize: 18 }}>{abierto[seccion] ? "▾" : "▸"}</Text>
           </Pressable>
 
@@ -211,7 +241,9 @@ export default function SeleccionAlimentosFlexible() {
           borderRadius: 10,
           alignItems: "center",
         }}
-        onPress={() => Alert.alert("¡Guardado!", "Tu selección se ha sumado al progreso.")}
+        onPress={() =>
+          Alert.alert("¡Guardado!", "Tu selección se ha sumado al progreso.")
+        }
       >
         <Text style={{ color: "white", fontWeight: "bold", fontSize: 16 }}>
           Guardar selección
@@ -221,10 +253,24 @@ export default function SeleccionAlimentosFlexible() {
   );
 }
 
-const renderBarra = (label: string, valor: number, max: number, color: string) => (
+const renderBarra = (
+  label: string,
+  valor: number,
+  max: number,
+  color: string
+) => (
   <View style={{ marginBottom: 12 }}>
-    <Text style={{ fontWeight: "600" }}>{label}: {valor.toFixed(0)}g</Text>
-    <View style={{ height: 10, backgroundColor: "#ddd", borderRadius: 5, overflow: "hidden" }}>
+    <Text style={{ fontWeight: "600" }}>
+      {label}: {valor.toFixed(0)}g
+    </Text>
+    <View
+      style={{
+        height: 10,
+        backgroundColor: "#ddd",
+        borderRadius: 5,
+        overflow: "hidden",
+      }}
+    >
       <View
         style={{
           width: `${Math.min((valor / max) * 100, 100)}%`,
@@ -236,94 +282,95 @@ const renderBarra = (label: string, valor: number, max: number, color: string) =
   </View>
 );
 
-const getStyles = (darkMode: boolean) => StyleSheet.create({
-  container: {
-    padding: 20,
-    paddingBottom: 60,
-    backgroundColor: darkMode ? "#121212" : "#fff",
-  },
-  titulo: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 12,
-    textAlign: "center",
-    color: darkMode ? "#fff" : "#000",
-  },
-  calorias: {
-    fontWeight: "600",
-    marginBottom: 6,
-    textAlign: "center",
-    color: darkMode ? "#fff" : "#000",
-  },
-  progressBackground: {
-    width: "100%",
-    height: 10,
-    backgroundColor: darkMode ? "#444" : "#eee",
-    borderRadius: 5,
-    marginBottom: 16,
-  },
-  progressFill: {
-    height: 10,
-    borderRadius: 5,
-  },
-  grupoContainer: {
-    marginBottom: 20,
-  },
-  grupoTitulo: {
-    fontWeight: "bold",
-    fontSize: 16,
-    marginBottom: 8,
-    color: darkMode ? "#fff" : "#000",
-  },
-  card: {
-    width: 100,
-    marginRight: 12,
-    padding: 10,
-    borderRadius: 12,
-    backgroundColor: darkMode ? "#1e1e1e" : "#f2f2f2",
-    alignItems: "center",
-  },
-  cardSeleccionado: {
-    backgroundColor: darkMode ? "#355d3a" : "#c4f5c1",
-  },
-  emoji: {
-    fontSize: 36,
-  },
-  cardLabel: {
-    marginTop: 4,
-    fontSize: 12,
-    fontWeight: "500",
-    textAlign: "center",
-    color: darkMode ? "#fff" : "#000",
-  },
-  btnGrande: {
-    marginTop: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    backgroundColor: darkMode ? "#444" : "#ddd",
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  porcionText: {
-    fontWeight: "600",
-    color: darkMode ? "#fff" : "#000",
-  },
-  botones: {
-    flexDirection: "row",
-    marginTop: 8,
-    gap: 8,
-  },
-  btn: {
-    width: 30,
-    height: 30,
-    backgroundColor: darkMode ? "#333" : "#ddd",
-    borderRadius: 15,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  btnText: {
-    fontWeight: "bold",
-    fontSize: 18,
-    color: darkMode ? "#fff" : "#000",
-  },
-});
+const getStyles = (darkMode: boolean) =>
+  StyleSheet.create({
+    container: {
+      padding: 20,
+      paddingBottom: 60,
+      backgroundColor: darkMode ? "#121212" : "#fff",
+    },
+    titulo: {
+      fontSize: 20,
+      fontWeight: "bold",
+      marginBottom: 12,
+      textAlign: "center",
+      color: darkMode ? "#fff" : "#000",
+    },
+    calorias: {
+      fontWeight: "600",
+      marginBottom: 6,
+      textAlign: "center",
+      color: darkMode ? "#fff" : "#000",
+    },
+    progressBackground: {
+      width: "100%",
+      height: 10,
+      backgroundColor: darkMode ? "#444" : "#eee",
+      borderRadius: 5,
+      marginBottom: 16,
+    },
+    progressFill: {
+      height: 10,
+      borderRadius: 5,
+    },
+    grupoContainer: {
+      marginBottom: 20,
+    },
+    grupoTitulo: {
+      fontWeight: "bold",
+      fontSize: 16,
+      marginBottom: 8,
+      color: darkMode ? "#fff" : "#000",
+    },
+    card: {
+      width: 100,
+      marginRight: 12,
+      padding: 10,
+      borderRadius: 12,
+      backgroundColor: darkMode ? "#1e1e1e" : "#f2f2f2",
+      alignItems: "center",
+    },
+    cardSeleccionado: {
+      backgroundColor: darkMode ? "#355d3a" : "#c4f5c1",
+    },
+    emoji: {
+      fontSize: 36,
+    },
+    cardLabel: {
+      marginTop: 4,
+      fontSize: 12,
+      fontWeight: "500",
+      textAlign: "center",
+      color: darkMode ? "#fff" : "#000",
+    },
+    btnGrande: {
+      marginTop: 6,
+      paddingHorizontal: 10,
+      paddingVertical: 6,
+      backgroundColor: darkMode ? "#444" : "#ddd",
+      borderRadius: 8,
+      alignItems: "center",
+    },
+    porcionText: {
+      fontWeight: "600",
+      color: darkMode ? "#fff" : "#000",
+    },
+    botones: {
+      flexDirection: "row",
+      marginTop: 8,
+      gap: 8,
+    },
+    btn: {
+      width: 30,
+      height: 30,
+      backgroundColor: darkMode ? "#333" : "#ddd",
+      borderRadius: 15,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    btnText: {
+      fontWeight: "bold",
+      fontSize: 18,
+      color: darkMode ? "#fff" : "#000",
+    },
+  });

@@ -13,13 +13,13 @@ const CONFIG_PATH = path.join(__dirname, "configuracion.txt");
 const RUTINAS_PATH = path.join(__dirname, "rutinas.txt");
 const ALIMENTACION_PATH = path.join(__dirname, "alimentacion.txt");
 
-// --- RUTAS ALIMENTACION ---
-
+// --- RUTA ALIMENTACIÓN (lee 7 campos, incluye 'comida') ---
 app.get("/api/alimentacion/:objetivo", (req, res) => {
-  const { objetivo } = req.params;
+  const objetivoParam = (req.params.objetivo || "").trim().toLowerCase();
+
   fs.readFile(ALIMENTACION_PATH, "utf8", (err, data) => {
     if (err) {
-      console.error("Error leyendo archivo alimentacion.txt:", err);
+      console.error("Error leyendo alimentacion.txt:", err);
       return res
         .status(500)
         .json({ message: "Error leyendo recomendaciones." });
@@ -27,32 +27,32 @@ app.get("/api/alimentacion/:objetivo", (req, res) => {
 
     const lineas = data.split("\n").filter(Boolean);
 
-    const filtradas = lineas.filter((line) => {
-      const objLinea = line.split("|")[0].trim().toLowerCase();
-      const objetivoParam = objetivo.trim().toLowerCase();
-      return objLinea === objetivoParam;
-    });
+    const recomendaciones = [];
+    for (const line of lineas) {
+      // objetivo|comida|categoria|alimento|porcion|gramos|calorias
+      const parts = line.split("|");
+      if (parts.length < 7) continue;
 
-    const recomendaciones = filtradas.map((line) => {
-      const [obj, categoria, alimento, porcion, gramos, calorias] =
-        line.split("|");
-      return {
+      const [obj, comida, categoria, alimento, porcion, gramos, calorias] =
+        parts.map((p) => p.trim());
+
+      if ((obj || "").toLowerCase() !== objetivoParam) continue;
+
+      recomendaciones.push({
         objetivo: obj,
-        categoria,
+        comida, // "Desayuno" | "Almuerzo" | "Merienda" | "Cena"
+        categoria, // "carbohidratos" | "proteinas" | "grasas saludables"
         alimento,
         porcion,
-        gramos: Number(gramos),
-        calorias: Number(calorias),
-      };
-    });
-
-    if (recomendaciones.length === 0) {
-      console.warn(
-        `No se encontraron recomendaciones para el objetivo '${objetivo}'.`
-      );
-      return res.status(404).json({
-        message: `No hay recomendaciones para el objetivo '${objetivo}'.`,
+        gramos: Number(gramos) || 0,
+        calorias: Number(calorias) || 0,
       });
+    }
+
+    if (!recomendaciones.length) {
+      return res
+        .status(404)
+        .json({ message: `No hay recomendaciones para '${objetivoParam}'.` });
     }
 
     res.json(recomendaciones);
@@ -211,20 +211,30 @@ app.post("/api/register", (req, res) => {
           })
       : [];
 
-    if (usuarios.some((u) => u.mail === email)) {
+    if (
+      usuarios.some(
+        (u) => u.mail.trim().toLowerCase() === email.trim().toLowerCase()
+      )
+    ) {
       return res.status(409).json({ message: "El correo ya está registrado." });
     }
 
-    // Generar un id único para el nuevo usuario
     const newId = uuidv4();
-    const nuevaLinea = `${newId}|${username}|${email}|${password}\n`;
+    const nuevaLinea = `${newId}|${username.trim()}|${email
+      .trim()
+      .toLowerCase()}|${password.trim()}\n`;
+
     fs.appendFile(USUARIOS_PATH, nuevaLinea, (err) => {
       if (err) {
         return res.status(500).json({ message: "Error al guardar usuario." });
       }
       res.json({
         message: "Usuario registrado correctamente.",
-        user: { id: newId, name: username, email },
+        user: {
+          id: newId,
+          name: username.trim(),
+          email: email.trim().toLowerCase(),
+        },
       });
     });
   });
@@ -305,10 +315,17 @@ app.post("/api/login", (req, res) => {
       .filter(Boolean)
       .map((line) => {
         const [id, username, mail, pass] = line.split("|");
-        return { id, username, mail, pass };
+        return {
+          id: id.trim(),
+          username: username.trim(),
+          mail: mail.trim().toLowerCase(),
+          pass: pass.trim(),
+        };
       });
 
-    const user = usuarios.find((u) => u.mail === email && u.pass === password);
+    const user = usuarios.find(
+      (u) => u.mail === email.trim().toLowerCase() && u.pass === password.trim()
+    );
 
     if (!user) {
       return res

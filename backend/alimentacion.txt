@@ -1,11 +1,191 @@
-bajar de peso|carbohidratos|Avena|1/2 taza|40|150
-bajar de peso|proteinas|Pechuga de pollo|100g|100|165
-bajar de peso|grasas saludables|Palta|1/4 unidad|50|80
+ganar masa muscular|Desayuno|carbohidratos|Avena cocida|1 taza|80|300
+ganar masa muscular|Desayuno|carbohidratos|Pan integral|2 rebanadas|60|150
+ganar masa muscular|Desayuno|carbohidratos|Arroz integral|1 taza|150|210
+ganar masa muscular|Desayuno|carbohidratos|Tostadas integrales|2 unidades|60|150
+ganar masa muscular|Desayuno|carbohidratos|Batido de fruta (plátano+frutos rojos)|300 ml|300|220
+ganar masa muscular|Desayuno|proteinas|Huevos enteros|2 unidades|100|140
+ganar masa muscular|Desayuno|proteinas|Yogur griego natural|200g|200|160
+ganar masa muscular|Desayuno|proteinas|Queso fresco|80g|80|120
+ganar masa muscular|Desayuno|proteinas|Pechuga de pavo|120g|120|130
+ganar masa muscular|Desayuno|proteinas|Claras de huevo|4 unidades|140|70
+ganar masa muscular|Desayuno|grasas saludables|Frutos secos mixtos|20g|20|120
+ganar masa muscular|Desayuno|grasas saludables|Mantequilla de maní|1 cda|15|95
+ganar masa muscular|Desayuno|grasas saludables|Palta|1/2 unidad|100|160
+ganar masa muscular|Desayuno|grasas saludables|Semillas de chía|15g|15|75
+ganar masa muscular|Desayuno|grasas saludables|Aceite de oliva|1 cda|10|90
 
-ganar masa muscular|carbohidratos|Arroz integral|1 taza|150|210
-ganar masa muscular|proteinas|Carne magra|150g|150|200
-ganar masa muscular|grasas saludables|Frutos secos|30g|30|180
+ganar masa muscular|Almuerzo|carbohidratos|Arroz integral|1 taza|150|210
+ganar masa muscular|Almuerzo|carbohidratos|Pasta integral cocida|1 taza|140|200
+ganar masa muscular|Almuerzo|carbohidratos|Quinoa cocida|1 taza|185|220
+ganar masa muscular|Almuerzo|carbohidratos|Camote al horno|200g|200|180
+ganar masa muscular|Almuerzo|carbohidratos|Pan pita integral|1 unidad|60|150
+ganar masa muscular|Almuerzo|proteinas|Pechuga de pollo|150g|150|165
+ganar masa muscular|Almuerzo|proteinas|Carne magra|150g|150|200
+ganar masa muscular|Almuerzo|proteinas|Pescado (merluza/salmón)|150g|150|160
+ganar masa muscular|Almuerzo|proteinas|Lentejas cocidas|1 taza|180|230
+ganar masa muscular|Almuerzo|proteinas|Tofu firme|150g|150|120
+ganar masa muscular|Almuerzo|grasas saludables|Aceite de oliva|1 cda|10|90
+ganar masa muscular|Almuerzo|grasas saludables|Palta|1/2 unidad|100|160
+ganar masa muscular|Almuerzo|grasas saludables|Aceitunas|10 unidades|30|45
+ganar masa muscular|Almuerzo|grasas saludables|Semillas de sésamo|15g|15|85
+ganar masa muscular|Almuerzo|grasas saludables|Nueces|25g|25|170
 
-tonificar|carbohidratos|Quinoa|1/2 taza|70|160
-tonificar|proteinas|Huevo entero|2 unidades|100|140
-tonificar|grasas saludables|Aceite de oliva|1 cucharada|10|90
+ganar masa muscular|Merienda|carbohidratos|Pan integral|2 rebanadas|60|150
+ganar masa muscular|Merienda|carbohidratos|Camote al horno|150g|150|130
+ganar masa muscular|Merienda|carbohidratos|Avena cocida|3/4 taza|60|230
+ganar masa muscular|Merienda|carbohidratos|Galletas de arroz integral|3 unidades|30|120
+ganar masa muscular|Merienda|carbohidratos|Fruta (manzana/banana)|1 unidad|150|95
+ganar masa muscular|Merienda|proteinas|Queso fresco|80g|80|120
+ganar masa muscular|Merienda|proteinas|Atún al natural|120g|120|120
+ganar masa muscular|Merienda|proteinas|Yogur griego|180g|180|145
+ganar masa muscular|Merienda|proteinas|Pavo en lonchas|100g|100|110
+ganar masa muscular|Merienda|proteinas|Batido de proteína (Whey)|1 scoop|30|120
+ganar masa muscular|Merienda|grasas saludables|Semillas de chía|20g|20|100
+ganar masa muscular|Merienda|grasas saludables|Frutos secos|30g|30|180
+ganar masa muscular|Merienda|grasas saludables|Mantequilla de maní|1 cda|15|95
+ganar masa muscular|Merienda|grasas saludables|Pasta de sésamo (tahini)|1 cda|15|90
+ganar masa muscular|Merienda|grasas saludables|Crema de almendras|1 cda|16|100
+
+ganar masa muscular|Cena|carbohidratos|Papas cocidas|200g|200|160
+ganar masa muscular|Cena|carbohidratos|Quinoa cocida|1 taza|185|220
+ganar masa muscular|Cena|carbohidratos|Arroz basmati|1 taza|150|210
+ganar masa muscular|Cena|carbohidratos|Cuscús integral|1 taza|150|200
+ganar masa muscular|Cena|carbohidratos|Pan integral|2 rebanadas|60|150
+ganar masa muscular|Cena|proteinas|Pescado (merluza/salmón)|180g|180|190
+ganar masa muscular|Cena|proteinas|Huevos enteros|3 unidades|150|210
+ganar masa muscular|Cena|proteinas|Pechuga de pollo|160g|160|175
+ganar masa muscular|Cena|proteinas|Ternera magra|150g|150|220
+ganar masa muscular|Cena|proteinas|Tofu salteado|180g|180|160
+ganar masa muscular|Cena|grasas saludables|Aceite de oliva|1 cda|10|90
+ganar masa muscular|Cena|grasas saludables|Aceitunas|12 unidades|36|55
+ganar masa muscular|Cena|grasas saludables|Palta|1/3 unidad|70|115
+ganar masa muscular|Cena|grasas saludables|Anacardos|25g|25|150
+ganar masa muscular|Cena|grasas saludables|Almendras|25g|25|160
+
+bajar de peso|Desayuno|carbohidratos|Avena cocida|1/2 taza|40|150
+bajar de peso|Desayuno|carbohidratos|Pan integral|1 rebanada|30|75
+bajar de peso|Desayuno|carbohidratos|Fruta (manzana/pera)|1 unidad|160|95
+bajar de peso|Desayuno|carbohidratos|Galletas de arroz|2 unidades|20|70
+bajar de peso|Desayuno|carbohidratos|Yogur con fruta|1 pote|170|120
+bajar de peso|Desayuno|proteinas|Claras de huevo|4 unidades|140|70
+bajar de peso|Desayuno|proteinas|Yogur descremado|150g|150|80
+bajar de peso|Desayuno|proteinas|Quesillo light|60g|60|85
+bajar de peso|Desayuno|proteinas|Pavo en lonchas|80g|80|85
+bajar de peso|Desayuno|proteinas|Requesón bajo en grasa|100g|100|90
+bajar de peso|Desayuno|grasas saludables|Semillas de chía|10g|10|50
+bajar de peso|Desayuno|grasas saludables|Palta|1/6 unidad|35|55
+bajar de peso|Desayuno|grasas saludables|Nueces|15g|15|100
+bajar de peso|Desayuno|grasas saludables|Aceite de oliva|1 cdita|5|45
+bajar de peso|Desayuno|grasas saludables|Semillas de linaza|10g|10|55
+
+bajar de peso|Almuerzo|carbohidratos|Quinoa cocida|1/2 taza|70|160
+bajar de peso|Almuerzo|carbohidratos|Arroz integral|1/2 taza|75|105
+bajar de peso|Almuerzo|carbohidratos|Camote asado|120g|120|100
+bajar de peso|Almuerzo|carbohidratos|Legumbres (garbanzo/lenteja)|3/4 taza|140|180
+bajar de peso|Almuerzo|carbohidratos|Pan pita integral|1/2 unidad|30|75
+bajar de peso|Almuerzo|proteinas|Pechuga de pollo|120g|120|130
+bajar de peso|Almuerzo|proteinas|Pescado blanco|150g|150|130
+bajar de peso|Almuerzo|proteinas|Clara de huevo|5 unidades|175|85
+bajar de peso|Almuerzo|proteinas|Atún al natural|120g|120|120
+bajar de peso|Almuerzo|proteinas|Tofu a la plancha|150g|150|120
+bajar de peso|Almuerzo|grasas saludables|Aceite de oliva|1 cdita|5|45
+bajar de peso|Almuerzo|grasas saludables|Semillas de girasol|15g|15|85
+bajar de peso|Almuerzo|grasas saludables|Palta|1/6 unidad|35|55
+bajar de peso|Almuerzo|grasas saludables|Aceitunas|8 unidades|24|35
+bajar de peso|Almuerzo|grasas saludables|Almendras|15g|15|90
+
+bajar de peso|Merienda|carbohidratos|Manzana|1 unidad|180|95
+bajar de peso|Merienda|carbohidratos|Frutos rojos|1 taza|150|85
+bajar de peso|Merienda|carbohidratos|Galletas de arroz|2 unidades|20|70
+bajar de peso|Merienda|carbohidratos|Zanahoria en bastones|150g|150|60
+bajar de peso|Merienda|carbohidratos|Palomitas de maíz al aire|3 tazas|24|90
+bajar de peso|Merienda|proteinas|Quesillo light|60g|60|85
+bajar de peso|Merienda|proteinas|Yogur descremado|150g|150|80
+bajar de peso|Merienda|proteinas|Pechuga de pavo|80g|80|85
+bajar de peso|Merienda|proteinas|Claras cocidas|3 unidades|105|50
+bajar de peso|Merienda|proteinas|Batido de proteína (Whey light)|1 scoop|30|110
+bajar de peso|Merienda|grasas saludables|Frutos secos|15g|15|90
+bajar de peso|Merienda|grasas saludables|Semillas de linaza|10g|10|55
+bajar de peso|Merienda|grasas saludables|Pasta de maní light|1 cda|16|90
+bajar de peso|Merienda|grasas saludables|Aceite de oliva|1 cdita|5|45
+bajar de peso|Merienda|grasas saludables|Semillas de calabaza|15g|15|85
+
+bajar de peso|Cena|carbohidratos|Verduras cocidas variadas|2 tazas|250|120
+bajar de peso|Cena|carbohidratos|Camote asado|120g|120|100
+bajar de peso|Cena|carbohidratos|Quinoa cocida|1/2 taza|90|120
+bajar de peso|Cena|carbohidratos|Arroz coliflor|1 taza|120|40
+bajar de peso|Cena|carbohidratos|Zoodles (zucchini en espiral)|2 tazas|220|50
+bajar de peso|Cena|proteinas|Atún al natural|120g|120|120
+bajar de peso|Cena|proteinas|Tofu|120g|120|95
+bajar de peso|Cena|proteinas|Pechuga de pollo|140g|140|155
+bajar de peso|Cena|proteinas|Claras revueltas|5 unidades|175|85
+bajar de peso|Cena|proteinas|Pescado blanco|160g|160|150
+bajar de peso|Cena|grasas saludables|Aceite de oliva|1 cdita|5|45
+bajar de peso|Cena|grasas saludables|Palta|1/6 unidad|35|55
+bajar de peso|Cena|grasas saludables|Aceitunas|8 unidades|24|35
+bajar de peso|Cena|grasas saludables|Semillas de sésamo|10g|10|60
+bajar de peso|Cena|grasas saludables|Nueces|15g|15|100
+
+tonificar|Desayuno|carbohidratos|Avena cocida|1/2 taza|40|150
+tonificar|Desayuno|carbohidratos|Pan integral|1–2 rebanadas|45|115
+tonificar|Desayuno|carbohidratos|Fruta (banana/manzana)|1 unidad|150|100
+tonificar|Desayuno|carbohidratos|Yogur con granola|1 pote|200|200
+tonificar|Desayuno|carbohidratos|Quinoa inflada|30g|30|120
+tonificar|Desayuno|proteinas|Huevo entero|2 unidades|100|140
+tonificar|Desayuno|proteinas|Yogur natural|180g|180|110
+tonificar|Desayuno|proteinas|Queso fresco|70g|70|110
+tonificar|Desayuno|proteinas|Pavo|90g|90|95
+tonificar|Desayuno|proteinas|Skyr|170g|170|110
+tonificar|Desayuno|grasas saludables|Mantequilla de maní|1 cda|15|95
+tonificar|Desayuno|grasas saludables|Semillas de chía|15g|15|75
+tonificar|Desayuno|grasas saludables|Almendras|20g|20|120
+tonificar|Desayuno|grasas saludables|Aceite de oliva|1 cda|10|90
+tonificar|Desayuno|grasas saludables|Pasta de sésamo (tahini)|1 cda|15|90
+
+tonificar|Almuerzo|carbohidratos|Arroz integral|3/4 taza|110|160
+tonificar|Almuerzo|carbohidratos|Quinoa cocida|2/3 taza|120|175
+tonificar|Almuerzo|carbohidratos|Papas cocidas|150g|150|120
+tonificar|Almuerzo|carbohidratos|Cuscús integral|3/4 taza|120|170
+tonificar|Almuerzo|carbohidratos|Pan integral|1 unidad|40|100
+tonificar|Almuerzo|proteinas|Pechuga de pavo|140g|140|150
+tonificar|Almuerzo|proteinas|Lentejas cocidas|3/4 taza|150|180
+tonificar|Almuerzo|proteinas|Pechuga de pollo|130g|130|150
+tonificar|Almuerzo|proteinas|Pescado|150g|150|150
+tonificar|Almuerzo|proteinas|Tofu|150g|150|120
+tonificar|Almuerzo|grasas saludables|Aceite de oliva|1 cda|10|90
+tonificar|Almuerzo|grasas saludables|Palta|1/5 unidad|40|65
+tonificar|Almuerzo|grasas saludables|Semillas de sésamo|15g|15|85
+tonificar|Almuerzo|grasas saludables|Nueces|20g|20|130
+tonificar|Almuerzo|grasas saludables|Aceitunas|10 unidades|30|45
+
+tonificar|Merienda|carbohidratos|Banana|1 unidad|120|105
+tonificar|Merienda|carbohidratos|Galletas de arroz integral|2 unidades|20|80
+tonificar|Merienda|carbohidratos|Avena cocida|1/2 taza|40|150
+tonificar|Merienda|carbohidratos|Batido de fruta|250 ml|250|180
+tonificar|Merienda|carbohidratos|Tostadas integrales|2 unidades|60|150
+tonificar|Merienda|proteinas|Queso fresco|60g|60|95
+tonificar|Merienda|proteinas|Yogur natural|180g|180|110
+tonificar|Merienda|proteinas|Pavo|80g|80|85
+tonificar|Merienda|proteinas|Claras cocidas|3 unidades|105|50
+tonificar|Merienda|proteinas|Skyr|170g|170|110
+tonificar|Merienda|grasas saludables|Frutos secos|20g|20|120
+tonificar|Merienda|grasas saludables|Semillas de girasol|15g|15|85
+tonificar|Merienda|grasas saludables|Mantequilla de maní|1 cda|15|95
+tonificar|Merienda|grasas saludables|Aceite de oliva|1 cdita|5|45
+tonificar|Merienda|grasas saludables|Pasta de almendras|1 cda|16|100
+
+tonificar|Cena|carbohidratos|Papas cocidas|150g|150|120
+tonificar|Cena|carbohidratos|Verduras cocidas variadas|2 tazas|250|120
+tonificar|Cena|carbohidratos|Quinoa cocida|1/2 taza|90|120
+tonificar|Cena|carbohidratos|Arroz integral|2/3 taza|110|160
+tonificar|Cena|carbohidratos|Pan integral|1 rebanada|30|75
+tonificar|Cena|proteinas|Atún al natural|120g|120|120
+tonificar|Cena|proteinas|Pescado|150g|150|150
+tonificar|Cena|proteinas|Pechuga de pollo|140g|140|155
+tonificar|Cena|proteinas|Claras revueltas|4 unidades|140|70
+tonificar|Cena|proteinas|Tofu salteado|160g|160|140
+tonificar|Cena|grasas saludables|Aceite de oliva|1 cda|10|90
+tonificar|Cena|grasas saludables|Semillas de linaza|15g|15|80
+tonificar|Cena|grasas saludables|Palta|1/5 unidad|40|65
+tonificar|Cena|grasas saludables|Almendras|20g|20|120
+tonificar|Cena|grasas saludables|Aceitunas|10 unidades|30|45

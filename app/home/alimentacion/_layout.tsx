@@ -9,7 +9,7 @@ export default function AlimentacionLayout() {
       <Stack.Screen
         name="completa"
         options={{
-          title: "Premiun",
+          title: "hola",
           headerLeft: () => <BackButton />,
         }}
       />

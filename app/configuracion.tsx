@@ -95,7 +95,7 @@ export default function Configuracion() {
         setUser(userObj);
 
         fetch(
-          `http://192.168.1.139:3000/api/configuracion/${encodeURIComponent(
+          `http://192.168.1.128:3000/api/configuracion/${encodeURIComponent(
             userObj.id
           )}`
         )
@@ -143,7 +143,7 @@ export default function Configuracion() {
 
     try {
       const response = await fetch(
-        "http://192.168.1.139:3000/api/configuracion",
+        "http://192.168.1.128:3000/api/configuracion",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
